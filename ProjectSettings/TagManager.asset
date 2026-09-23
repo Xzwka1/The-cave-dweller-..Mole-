@@ -2,18 +2,20 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - Player
+  - ExitDoor
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Background
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Player
+  - Enemy
+  - Projectile
   - 
   - 
   - 
@@ -41,3 +43,24 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 756169559
+    locked: 0
+  - name: Terrain
+    uniqueID: 1884611633
+    locked: 0
+  - name: Characters
+    uniqueID: 1735930477
+    locked: 0
+  - name: Foreground
+    uniqueID: 248346373
+    locked: 0
+  - name: VFX
+    uniqueID: 2138856393
+    locked: 0
+  - name: InGameUI
+    uniqueID: 1893119319
+    locked: 0
+  m_RenderingLayers:
+  - Default
+  m_MigratedRenderPipelines: []
