@@ -651,7 +651,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3465022551602446195, guid: c5fee2cce93615642be585045f8043b0, type: 3}
       propertyPath: nextSceneName
-      value: Main_Menu
+      value: Winning_Map
       objectReference: {fileID: 0}
     - target: {fileID: 7465447629650746520, guid: c5fee2cce93615642be585045f8043b0, type: 3}
       propertyPath: m_Name
