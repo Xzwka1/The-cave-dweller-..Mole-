@@ -21,15 +21,19 @@ namespace CaveDweller.Player
 
         private int currentHealth;
         private bool isInvulnerable;
+        private bool isDashInvulnerable;
         private bool isDead;
         private Coroutine invulnerabilityCoroutine;
         private Color originalColor;
         private bool hasOriginalColor;
 
+        public event System.Action<int, int> OnHealthChanged;
+
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
         public bool IsDead => isDead;
-        public bool IsInvulnerable => isInvulnerable;
+        public bool IsInvulnerable => isInvulnerable || isDashInvulnerable;
+        public bool IsDashInvulnerable => isDashInvulnerable;
         public float InvulnerabilityDuration => invulnerabilityDuration;
 
         private void Awake()
@@ -52,6 +56,11 @@ namespace CaveDweller.Player
             }
         }
 
+        private void Start()
+        {
+            OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        }
+
         private void OnValidate()
         {
             if (maxHealth < 1) maxHealth = 1;
@@ -62,10 +71,11 @@ namespace CaveDweller.Player
         public void TakeDamage(int amount)
         {
             if (isDead) return;
-            if (isInvulnerable) return;
+            if (IsInvulnerable) return;
             if (amount <= 0) return;
 
             currentHealth = Mathf.Clamp(currentHealth - amount, 0, maxHealth);
+            OnHealthChanged?.Invoke(currentHealth, maxHealth);
 
             if (currentHealth <= 0)
             {
@@ -82,6 +92,29 @@ namespace CaveDweller.Player
                     RestoreVisualState();
                 }
                 invulnerabilityCoroutine = StartCoroutine(InvulnerabilityRoutine());
+            }
+        }
+
+        public void SetDashInvulnerable(bool value)
+        {
+            if (isDead) return;
+            isDashInvulnerable = value;
+
+            if (value)
+            {
+                if (spriteRenderer != null && hasOriginalColor)
+                {
+                    Color ghost = originalColor;
+                    ghost.a = 0.45f;
+                    spriteRenderer.color = ghost;
+                }
+            }
+            else
+            {
+                if (!isInvulnerable)
+                {
+                    RestoreVisualState();
+                }
             }
         }
 
@@ -122,6 +155,7 @@ namespace CaveDweller.Player
 
             isDead = true;
             isInvulnerable = false;
+            isDashInvulnerable = false;
 
             if (invulnerabilityCoroutine != null)
             {

@@ -65,6 +65,23 @@ namespace CaveDweller.Enemies
                 cachedRigidbody.freezeRotation = true;
             }
 
+            if (cachedCollider != null)
+            {
+                if (cachedCollider.sharedMaterial == null)
+                {
+                    var enemyMat = new PhysicsMaterial2D("EnemyFrictionless")
+                    {
+                        friction = 0f,
+                        bounciness = 0f
+                    };
+                    cachedCollider.sharedMaterial = enemyMat;
+                }
+                else
+                {
+                    cachedCollider.sharedMaterial.friction = 0f;
+                }
+            }
+
             if (currentHealth <= 0 || currentHealth > maxHealth)
             {
                 currentHealth = maxHealth;
