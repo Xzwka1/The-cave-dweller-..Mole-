@@ -10,18 +10,18 @@ namespace CaveDweller.Core
     {
         [Header("Target Tracking")]
         [SerializeField] private Transform target;
-        [SerializeField] private Vector3 offset = new Vector3(0f, 0.35f, -10f);
+        [SerializeField] private Vector3 offset = new Vector3(0f, 1.2f, -10f);
         [SerializeField] private float smoothSpeed = 0.15f;
 
         [Header("Mouse Aim Look-Ahead")]
         [SerializeField] private bool enableMouseLookAhead = true;
-        [SerializeField] private float maxLookAheadDistance = 1.2f;
-        [SerializeField] private float mouseInfluence = 0.22f;
+        [SerializeField] private float maxLookAheadDistance = 3.5f;
+        [SerializeField] private float mouseInfluence = 0.32f;
 
         [Header("Zoom Settings (GDD Spec)")]
-        [SerializeField] private float minZoom = 1.8f;
-        [SerializeField] private float maxZoom = 3.8f;
-        [SerializeField] private float zoomSensitivity = 0.8f;
+        [SerializeField] private float minZoom = 5.0f;
+        [SerializeField] private float maxZoom = 11.5f;
+        [SerializeField] private float zoomSensitivity = 1.5f;
         [SerializeField] private float zoomSmoothSpeed = 10f;
 
         private Camera cam;
@@ -35,7 +35,7 @@ namespace CaveDweller.Core
             cam = GetComponent<Camera>();
             if (cam.orthographicSize > maxZoom || cam.orthographicSize < minZoom)
             {
-                cam.orthographicSize = 2.4f;
+                cam.orthographicSize = 7.5f;
             }
             targetZoom = cam.orthographicSize;
         }

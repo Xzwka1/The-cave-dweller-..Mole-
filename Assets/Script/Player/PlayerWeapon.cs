@@ -17,7 +17,7 @@ namespace CaveDweller.Player
         [SerializeField] private float reloadTime = 1.2f;
         [SerializeField] private int pelletsCount = 7;
         [SerializeField] private float spreadAngle = 36f;
-        [SerializeField] private float bulletRange = 10f;
+        [SerializeField] private float bulletRange = 22f;
         [SerializeField] private int damagePerPellet = 18;
         [SerializeField] private float recoilForce = 1.6f;
         [SerializeField] private float screenShakeMagnitude = 0.07f;
@@ -30,7 +30,7 @@ namespace CaveDweller.Player
 
         [Header("Tracer Settings")]
         [SerializeField] private float tracerLifetime = 0.06f;
-        [SerializeField] private float projectileSpeed = 24f;
+        [SerializeField] private float projectileSpeed = 32f;
 
         private int currentAmmo;
         private bool isReloading;

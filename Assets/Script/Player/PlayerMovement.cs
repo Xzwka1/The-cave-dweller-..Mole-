@@ -10,19 +10,19 @@ namespace CaveDweller.Player
     public class PlayerMovement : MonoBehaviour
     {
         [Header("Movement Settings")]
-        [SerializeField] private float moveSpeed = 4.5f;
-        [SerializeField] private float jumpForce = 7.2f;
+        [SerializeField] private float moveSpeed = 8.5f;
+        [SerializeField] private float jumpForce = 15.0f;
 
         [Header("Dash Settings")]
-        [SerializeField] private float dashSpeed = 9.5f;
-        [SerializeField] private float dashDuration = 0.2f;
+        [SerializeField] private float dashSpeed = 22.0f;
+        [SerializeField] private float dashDuration = 0.22f;
         [SerializeField] private float dashCooldown = 1.0f;
         [SerializeField] private float postDashGraceTime = 0.1f;
         [SerializeField] private LayerMask enemyLayers;
 
         [Header("Ground Check Settings")]
         [SerializeField] private LayerMask groundLayer;
-        [SerializeField] private float groundCheckDistance = 0.08f;
+        [SerializeField] private float groundCheckDistance = 0.15f;
 
         private Rigidbody2D rb;
         private Collider2D col;

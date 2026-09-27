@@ -207,7 +207,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.0305, y: -0.0419, z: 0}
-  m_LocalScale: {x: 0.9271, y: 0.9244, z: 1}
+  m_LocalScale: {x: 3.7084, y: 3.6976, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 848688878}
@@ -1579,7 +1579,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 2.4
+  orthographic size: 7.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2504,14 +2504,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Core.CameraController
   target: {fileID: 883084980715}
-  offset: {x: 0, y: 0.35, z: -10}
+  offset: {x: 0, y: 1.2, z: -10}
   smoothSpeed: 0.15
-  minZoom: 1.8
-  maxZoom: 3.8
+  minZoom: 5.0
+  maxZoom: 11.5
   zoomSensitivity: 1.5
   zoomSmoothSpeed: 10
-  maxLookAheadDistance: 1.2
-  mouseInfluence: 0.22
+  maxLookAheadDistance: 3.5
+  mouseInfluence: 0.32
 --- !u!1 &883099900011
 GameObject:
   m_ObjectHideFlags: 0
@@ -2605,7 +2605,7 @@ Transform:
   m_GameObject: {fileID: 883099900001}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.5, y: 3.5, z: 0}
+  m_LocalPosition: {x: 30.74, y: 16.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2655,7 +2655,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2, y: 3}
+  m_Size: {x: 6, y: 8}
   m_EdgeRadius: 0
 --- !u!114 &883099900004
 MonoBehaviour:
@@ -3352,7 +3352,7 @@ MonoBehaviour:
   reloadTime: 1.2
   pelletsCount: 7
   spreadAngle: 36
-  bulletRange: 10
+  bulletRange: 22
   damagePerPellet: 18
   hitMask:
     serializedVersion: 2
@@ -3361,7 +3361,7 @@ MonoBehaviour:
   muzzleFlashLight: {fileID: 883000794046}
   bulletTracerPrefab: {fileID: 7620808863313659146, guid: 2040226b15d49814e9550aaa5542d714, type: 3}
   tracerLifetime: 0.06
-  projectileSpeed: 24
+  projectileSpeed: 32
   recoilForce: 1.6
   screenShakeMagnitude: 0.07
 --- !u!1 &883001068909
@@ -3558,8 +3558,8 @@ Transform:
   m_GameObject: {fileID: 883001068909}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.0, y: -1.75, z: 0}
-  m_LocalScale: {x: 0.33, y: 0.33, z: 1}
+  m_LocalPosition: {x: -16.74, y: -6.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 883007011024}
@@ -3945,8 +3945,8 @@ Transform:
   m_GameObject: {fileID: 883084980711}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.5, y: -3.7, z: 0}
-  m_LocalScale: {x: 0.33, y: 0.33, z: 1}
+  m_LocalPosition: {x: -31.49, y: -13.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 883048730622}
@@ -3965,15 +3965,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7988ff6dd781238419d27825f95de159, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerMovement
-  moveSpeed: 4.5
-  jumpForce: 7.2
-  dashSpeed: 9.5
-  dashDuration: 0.2
+  moveSpeed: 8.5
+  jumpForce: 15
+  dashSpeed: 22
+  dashDuration: 0.22
   dashCooldown: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  groundCheckDistance: 0.08
+  groundCheckDistance: 0.15
 --- !u!114 &883084980717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4053,7 +4053,7 @@ MonoBehaviour:
   m_PointLightInnerAngle: 20
   m_PointLightOuterAngle: 60
   m_PointLightInnerRadius: 0.5
-  m_PointLightOuterRadius: 8
+  m_PointLightOuterRadius: 15
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -4218,7 +4218,7 @@ Transform:
   m_GameObject: {fileID: 883023102211}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.0, y: -1.75, z: 0}
+  m_LocalPosition: {x: 5.5, y: -4.0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4480,8 +4480,8 @@ Transform:
   m_GameObject: {fileID: 883006015304}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.5, y: -1.75, z: 0}
-  m_LocalScale: {x: 0.33, y: 0.33, z: 1}
+  m_LocalPosition: {x: 7.3, y: -4.0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 883074603077}
@@ -4512,7 +4512,7 @@ Transform:
   m_GameObject: {fileID: 883006637557}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.5, y: -1.75, z: 0}
+  m_LocalPosition: {x: 9.0, y: -4.0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
