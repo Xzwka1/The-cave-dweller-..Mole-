@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 #if ENABLE_INPUT_SYSTEM
@@ -14,10 +15,12 @@ namespace CaveDweller.Player
         [Header("Shotgun Settings")]
         [SerializeField] private int maxAmmo = 2;
         [SerializeField] private float reloadTime = 1.2f;
-        [SerializeField] private int pelletsCount = 6;
-        [SerializeField] private float spreadAngle = 18f;
-        [SerializeField] private float bulletRange = 12f;
-        [SerializeField] private int damagePerPellet = 20;
+        [SerializeField] private int pelletsCount = 7;
+        [SerializeField] private float spreadAngle = 36f;
+        [SerializeField] private float bulletRange = 22f;
+        [SerializeField] private int damagePerPellet = 18;
+        [SerializeField] private float recoilForce = 1.6f;
+        [SerializeField] private float screenShakeMagnitude = 0.07f;
         [SerializeField] private LayerMask hitMask = -1;
 
         [Header("References")]
@@ -27,7 +30,7 @@ namespace CaveDweller.Player
 
         [Header("Tracer Settings")]
         [SerializeField] private float tracerLifetime = 0.06f;
-        [SerializeField] private float projectileSpeed = 22f;
+        [SerializeField] private float projectileSpeed = 32f;
 
         private int currentAmmo;
         private bool isReloading;
@@ -100,34 +103,39 @@ namespace CaveDweller.Player
             HandleInput();
         }
 
-        private void HandleAim()
+        private Vector3 GetMouseWorldPosition()
         {
-            if (mainCamera == null) return;
-            if (muzzlePoint == null) return;
+            if (mainCamera == null)
+            {
+                mainCamera = Camera.main;
+                if (mainCamera == null) return transform.position + Vector3.right;
+            }
 
             Vector2 mouseScreenPos = Vector2.zero;
-
 #if ENABLE_INPUT_SYSTEM
             Mouse mouse = Mouse.current;
             if (mouse != null)
             {
                 mouseScreenPos = mouse.position.ReadValue();
             }
-            else
-            {
-                return;
-            }
 #else
             mouseScreenPos = Input.mousePosition;
 #endif
+            float camDist = Mathf.Abs(mainCamera.transform.position.z);
+            Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, camDist));
+            worldPos.z = 0f;
+            return worldPos;
+        }
 
-            float camToMuzzleDist = Mathf.Abs(mainCamera.transform.position.z - muzzlePoint.position.z);
-            Vector3 mouseWorld = mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, camToMuzzleDist));
-            Vector2 direction = (Vector2)mouseWorld - (Vector2)muzzlePoint.position;
+        private void HandleAim()
+        {
+            Vector3 mouseWorld = GetMouseWorldPosition();
 
-            if (direction.sqrMagnitude < 0.0001f) return;
+            // Aim from the gun's pivot (player chest) towards mouse world position
+            Vector2 aimDir = (Vector2)mouseWorld - (Vector2)transform.position;
+            if (aimDir.sqrMagnitude < 0.0001f) return;
 
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0f, 0f, angle);
         }
 
@@ -181,11 +189,38 @@ namespace CaveDweller.Player
 
         private void Fire()
         {
-            if (muzzlePoint == null) return;
-
             currentAmmo--;
 
+            Vector3 mouseWorld = GetMouseWorldPosition();
             Vector2 origin = muzzlePoint != null ? (Vector2)muzzlePoint.position : (Vector2)transform.position;
+
+            // Direct line from muzzle straight to mouse cursor
+            Vector2 aimToMouse = ((Vector2)mouseWorld - origin).normalized;
+            if (aimToMouse.sqrMagnitude < 0.0001f)
+            {
+                aimToMouse = transform.right;
+            }
+            float centerAngle = Mathf.Atan2(aimToMouse.y, aimToMouse.x) * Mathf.Rad2Deg;
+
+            // Physical recoil on player
+            Rigidbody2D playerRb = transform.root.GetComponent<Rigidbody2D>();
+            if (playerRb != null)
+            {
+                playerRb.AddForce(-aimToMouse * recoilForce, ForceMode2D.Impulse);
+            }
+
+            // Screen shake feedback
+            if (mainCamera != null)
+            {
+                var camCtrl = mainCamera.GetComponent<CaveDweller.Core.CameraController>();
+                if (camCtrl != null)
+                {
+                    camCtrl.Shake(0.08f, screenShakeMagnitude);
+                }
+            }
+
+            // Audio feedback
+            CaveDweller.Core.SoundManager.Instance.PlayGunshotSFX();
 
             if (muzzleFlashLight != null)
             {
@@ -205,40 +240,52 @@ namespace CaveDweller.Player
                 }
             }
 
-            float baseAngle = transform.eulerAngles.z;
-
             bool isProjectilePrefab = false;
             if (bulletTracerPrefab != null && bulletTracerPrefab.GetComponent<Projectile>() != null)
             {
                 isProjectilePrefab = true;
             }
 
+            List<Collider2D> pelletColliders = new List<Collider2D>();
+            float halfSpread = spreadAngle * 0.5f;
+
             for (int i = 0; i < pelletsCount; i++)
             {
-                float spreadOffset = UnityEngine.Random.Range(-spreadAngle * 0.5f, spreadAngle * 0.5f);
-                float pelletAngle = baseAngle + spreadOffset;
+                // Organic randomized shotgun spread:
+                // Stratified random sampling across the spread cone with organic scatter flutter
+                float sliceStart = -halfSpread + (i * spreadAngle / pelletsCount);
+                float sliceEnd = sliceStart + (spreadAngle / pelletsCount);
+                float randomAngleOffset = UnityEngine.Random.Range(sliceStart, sliceEnd);
+                float scatterFlutter = UnityEngine.Random.Range(-spreadAngle * 0.12f, spreadAngle * 0.12f);
+                float pelletAngle = centerAngle + Mathf.Clamp(randomAngleOffset + scatterFlutter, -halfSpread * 1.08f, halfSpread * 1.08f);
+
                 float rad = pelletAngle * Mathf.Deg2Rad;
                 Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
 
-                if (dir.sqrMagnitude < 0.0001f)
-                {
-                    dir = Vector2.right;
-                }
+                float speedVariance = UnityEngine.Random.Range(0.88f, 1.14f);
+                float pelletSpeed = projectileSpeed * speedVariance;
+                float rangeVariance = UnityEngine.Random.Range(0.92f, 1.08f);
+                float effectiveRange = bulletRange * rangeVariance;
 
                 if (isProjectilePrefab)
                 {
                     GameObject pellet = Instantiate(bulletTracerPrefab, origin, Quaternion.identity);
                     Projectile proj = pellet.GetComponent<Projectile>();
+                    Collider2D pCol = pellet.GetComponent<Collider2D>();
+                    if (pCol != null)
+                    {
+                        pelletColliders.Add(pCol);
+                    }
                     if (proj != null)
                     {
-                        float lifetime = bulletRange / Mathf.Max(projectileSpeed, 1f);
-                        proj.Configure(projectileSpeed, damagePerPellet, lifetime, hitMask);
+                        float lifetime = effectiveRange / Mathf.Max(pelletSpeed, 1f);
+                        proj.Configure(pelletSpeed, damagePerPellet, lifetime, hitMask);
                         proj.Launch(dir, transform.root.gameObject);
                     }
                 }
                 else
                 {
-                    RaycastHit2D hit = Physics2D.Raycast(origin, dir, bulletRange, hitMask);
+                    RaycastHit2D hit = Physics2D.Raycast(origin, dir, effectiveRange, hitMask);
                     Vector2 endPoint;
 
                     if (hit.collider != null && hit.collider.transform.root != transform.root && !hit.collider.CompareTag("Player"))
@@ -268,6 +315,18 @@ namespace CaveDweller.Player
                     else
                     {
                         Debug.DrawLine(origin, endPoint, Color.yellow, 0.05f);
+                    }
+                }
+            }
+
+            // Ensure all pellets spawned in this blast ignore each other in Unity physics
+            for (int a = 0; a < pelletColliders.Count; a++)
+            {
+                for (int b = a + 1; b < pelletColliders.Count; b++)
+                {
+                    if (pelletColliders[a] != null && pelletColliders[b] != null)
+                    {
+                        Physics2D.IgnoreCollision(pelletColliders[a], pelletColliders[b], true);
                     }
                 }
             }

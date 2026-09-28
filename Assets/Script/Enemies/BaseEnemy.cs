@@ -65,6 +65,23 @@ namespace CaveDweller.Enemies
                 cachedRigidbody.freezeRotation = true;
             }
 
+            if (cachedCollider != null)
+            {
+                if (cachedCollider.sharedMaterial == null)
+                {
+                    var enemyMat = new PhysicsMaterial2D("EnemyFrictionless")
+                    {
+                        friction = 0f,
+                        bounciness = 0f
+                    };
+                    cachedCollider.sharedMaterial = enemyMat;
+                }
+                else
+                {
+                    cachedCollider.sharedMaterial.friction = 0f;
+                }
+            }
+
             if (currentHealth <= 0 || currentHealth > maxHealth)
             {
                 currentHealth = maxHealth;
@@ -143,6 +160,7 @@ namespace CaveDweller.Enemies
         public virtual void DealDamageToPlayer(IDamageable target, int amount)
         {
             if (target == null || target.IsDead) return;
+            CaveDweller.Core.SoundManager.Instance.PlayMonsterMeleeSFX();
             target.TakeDamage(amount);
         }
 
@@ -153,6 +171,7 @@ namespace CaveDweller.Enemies
             if (d == null) d = targetObj.GetComponentInParent<IDamageable>();
             if (d == null) d = targetObj.GetComponentInChildren<IDamageable>();
             if (d == null || d.IsDead) return;
+            CaveDweller.Core.SoundManager.Instance.PlayMonsterMeleeSFX();
             d.TakeDamage(amount);
         }
 

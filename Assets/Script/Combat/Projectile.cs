@@ -169,7 +169,7 @@ namespace CaveDweller.Combat
                 Mathf.Max(boxCol.bounds.size.y, 0.01f));
             float distance = speed * Time.fixedDeltaTime + skinWidth;
 
-            RaycastHit2D hit = Physics2D.BoxCast(
+            RaycastHit2D[] hits = Physics2D.BoxCastAll(
                 (Vector2)boxCol.bounds.center,
                 size,
                 0f,
@@ -185,7 +185,7 @@ namespace CaveDweller.Combat
                 for (int i = 0; i < illuminated.Length; i++)
                 {
                     Collider2D col = illuminated[i];
-                    if (col != null && !IsOwnerCollider(col))
+                    if (col != null && !IsInvalidTarget(col))
                     {
                         ILightDetectable detectable = col.GetComponent<ILightDetectable>();
                         if (detectable == null && col.attachedRigidbody != null)
@@ -200,9 +200,14 @@ namespace CaveDweller.Combat
                 }
             }
 
-            if (hit.collider != null && hit.collider.gameObject != gameObject && hit.collider != boxCol)
+            for (int i = 0; i < hits.Length; i++)
             {
-                HandleHit(hit.collider);
+                Collider2D targetCol = hits[i].collider;
+                if (!IsInvalidTarget(targetCol))
+                {
+                    HandleHit(targetCol);
+                    break;
+                }
             }
         }
 
@@ -213,7 +218,7 @@ namespace CaveDweller.Combat
                 return;
             }
 
-            if (other == null || other.gameObject == gameObject)
+            if (IsInvalidTarget(other))
             {
                 return;
             }
@@ -306,7 +311,7 @@ namespace CaveDweller.Combat
                 return;
             }
 
-            if (IsOwnerCollider(other))
+            if (IsInvalidTarget(other))
             {
                 return;
             }
@@ -334,6 +339,16 @@ namespace CaveDweller.Combat
             BeginDespawn();
         }
 
+        private bool IsInvalidTarget(Collider2D col)
+        {
+            if (col == null) return true;
+            if (col.gameObject == gameObject || col == boxCol) return true;
+            if (IsOwnerCollider(col)) return true;
+            // Never hit another projectile (allows shotgun pellets to fly freely together)
+            if (col.GetComponent<Projectile>() != null || col.GetComponentInParent<Projectile>() != null) return true;
+            return false;
+        }
+
         private void SpawnImpactEffect()
         {
             if (impactEffectPrefab == null)
@@ -347,6 +362,11 @@ namespace CaveDweller.Combat
         private bool IsInHitMask(GameObject target)
         {
             if (target == null)
+            {
+                return false;
+            }
+
+            if (target.GetComponent<Projectile>() != null)
             {
                 return false;
             }

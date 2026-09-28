@@ -10,13 +10,16 @@ namespace CaveDweller.Player
     public class PlayerMovement : MonoBehaviour
     {
         [Header("Movement Settings")]
-        [SerializeField] private float moveSpeed = 7f;
-        [SerializeField] private float jumpForce = 12f;
+        [SerializeField] private float moveSpeed = 8.5f;
+        [SerializeField] private float jumpForce = 8.5f;
+        [SerializeField] private float fallGravityMultiplier = 1.6f;
 
         [Header("Dash Settings")]
-        [SerializeField] private float dashSpeed = 16f;
-        [SerializeField] private float dashDuration = 0.2f;
+        [SerializeField] private float dashSpeed = 22.0f;
+        [SerializeField] private float dashDuration = 0.22f;
         [SerializeField] private float dashCooldown = 1.0f;
+        [SerializeField] private float postDashGraceTime = 0.1f;
+        [SerializeField] private LayerMask enemyLayers;
 
         [Header("Ground Check Settings")]
         [SerializeField] private LayerMask groundLayer;
@@ -25,11 +28,13 @@ namespace CaveDweller.Player
         private Rigidbody2D rb;
         private Collider2D col;
         private SpriteRenderer spriteRenderer;
+        private PlayerHealth playerHealth;
 
         private float horizontalInput;
         private bool isGrounded;
         private bool isDashing;
         private bool canDash = true;
+        private bool isPhasingEnemies;
         private float facingDirection = 1f; // 1 = Right, -1 = Left
         private float originalGravity;
 
@@ -42,10 +47,43 @@ namespace CaveDweller.Player
             rb = GetComponent<Rigidbody2D>();
             col = GetComponent<Collider2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
+            playerHealth = GetComponent<PlayerHealth>();
             originalGravity = rb.gravityScale;
+
             if (groundLayer.value == 0)
             {
                 groundLayer = 1 << 0;
+            }
+
+            if (enemyLayers.value == 0)
+            {
+                int enemyLayer = LayerMask.NameToLayer("Enemy");
+                if (enemyLayer != -1)
+                {
+                    enemyLayers = 1 << enemyLayer;
+                }
+            }
+
+            // Zero friction physics material to prevent sticking/floating against walls & enemies
+            if (col != null)
+            {
+                var zeroFriction = new PhysicsMaterial2D("PlayerFrictionless")
+                {
+                    friction = 0f,
+                    bounciness = 0f
+                };
+                col.sharedMaterial = zeroFriction;
+
+                if (col is BoxCollider2D boxCol && boxCol.edgeRadius < 0.02f)
+                {
+                    boxCol.edgeRadius = 0.02f;
+                }
+            }
+
+            if (rb != null)
+            {
+                rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+                rb.interpolation = RigidbodyInterpolation2D.Interpolate;
             }
         }
 
@@ -56,7 +94,7 @@ namespace CaveDweller.Player
             ReadInput();
             CheckGround();
 
-            // Flip sprite according to movement
+            // Flip sprite according to movement, or mouse aim direction when idle
             if (horizontalInput > 0.05f)
             {
                 facingDirection = 1f;
@@ -67,6 +105,31 @@ namespace CaveDweller.Player
                 facingDirection = -1f;
                 if (spriteRenderer != null) spriteRenderer.flipX = true;
             }
+            else
+            {
+                // Idle: face towards mouse cursor
+                Camera cam = Camera.main;
+                if (cam != null && spriteRenderer != null)
+                {
+                    Vector2 mouseScreen = Vector2.zero;
+#if ENABLE_INPUT_SYSTEM
+                    if (Mouse.current != null) mouseScreen = Mouse.current.position.ReadValue();
+#else
+                    mouseScreen = Input.mousePosition;
+#endif
+                    Vector3 mouseWorld = cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, Mathf.Abs(cam.transform.position.z)));
+                    if (mouseWorld.x < transform.position.x - 0.2f)
+                    {
+                        facingDirection = -1f;
+                        spriteRenderer.flipX = true;
+                    }
+                    else if (mouseWorld.x > transform.position.x + 0.2f)
+                    {
+                        facingDirection = 1f;
+                        spriteRenderer.flipX = false;
+                    }
+                }
+            }
         }
 
         private void FixedUpdate()
@@ -75,6 +138,16 @@ namespace CaveDweller.Player
 
             // Move horizontally
             rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
+
+            // Snappy platformer physics: increase gravity when descending to prevent floatiness
+            if (rb.linearVelocity.y < -0.1f)
+            {
+                rb.gravityScale = originalGravity * fallGravityMultiplier;
+            }
+            else
+            {
+                rb.gravityScale = originalGravity;
+            }
         }
 
         private void ReadInput()
@@ -116,6 +189,7 @@ namespace CaveDweller.Player
         private void Jump()
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            CaveDweller.Core.SoundManager.Instance.PlayJumpSFX();
         }
 
         private void CheckGround()
@@ -134,10 +208,18 @@ namespace CaveDweller.Player
             isGrounded = hit.collider != null;
         }
 
+        private void OnDisable()
+        {
+            RestoreEnemyCollisions();
+        }
+
         private IEnumerator PerformDash()
         {
             canDash = false;
             isDashing = true;
+
+            EnableEnemyPhasing();
+            CaveDweller.Core.SoundManager.Instance.PlayDashSFX();
 
             rb.gravityScale = 0f;
             float dashDir = horizontalInput != 0f ? Mathf.Sign(horizontalInput) : facingDirection;
@@ -148,8 +230,65 @@ namespace CaveDweller.Player
             rb.gravityScale = originalGravity;
             isDashing = false;
 
+            // Grace period for I-frames and phasing through enemies
+            if (postDashGraceTime > 0f)
+            {
+                yield return new WaitForSeconds(postDashGraceTime);
+            }
+
+            // Wait until player is no longer overlapping an enemy collider (max 0.25s safety timeout)
+            float timeout = 0.25f;
+            while (timeout > 0f && IsOverlappingEnemy())
+            {
+                yield return null;
+                timeout -= Time.deltaTime;
+            }
+
+            RestoreEnemyCollisions();
+
             yield return new WaitForSeconds(dashCooldown);
             canDash = true;
+        }
+
+        private void EnableEnemyPhasing()
+        {
+            isPhasingEnemies = true;
+            int playerLayer = gameObject.layer;
+            int enemyLayer = LayerMask.NameToLayer("Enemy");
+            if (enemyLayer != -1)
+            {
+                Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+            }
+
+            if (playerHealth != null)
+            {
+                playerHealth.SetDashInvulnerable(true);
+            }
+        }
+
+        private void RestoreEnemyCollisions()
+        {
+            if (!isPhasingEnemies) return;
+            isPhasingEnemies = false;
+
+            int playerLayer = gameObject.layer;
+            int enemyLayer = LayerMask.NameToLayer("Enemy");
+            if (enemyLayer != -1)
+            {
+                Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+            }
+
+            if (playerHealth != null)
+            {
+                playerHealth.SetDashInvulnerable(false);
+            }
+        }
+
+        private bool IsOverlappingEnemy()
+        {
+            if (col == null || enemyLayers.value == 0) return false;
+            Collider2D hit = Physics2D.OverlapBox(col.bounds.center, col.bounds.size * 0.9f, 0f, enemyLayers);
+            return hit != null;
         }
     }
 }

@@ -5,6 +5,7 @@ public class Main_Menu : MonoBehaviour
 {
     public void GoToFirstMap()
     {
+        CaveDweller.Core.SoundManager.Instance.PlayButtonClickSFX();
         Debug.Log("กำลังไปที่ First_MAP");
         SceneManager.LoadScene("First_MAP");
     }
@@ -12,6 +13,7 @@ public class Main_Menu : MonoBehaviour
     // ฟังก์ชันสำหรับปุ่ม Exit
     public void ExitGame()
     {
+        CaveDweller.Core.SoundManager.Instance.PlayButtonClickSFX();
         Debug.Log("ออกจากเกม");
 
 #if UNITY_EDITOR
