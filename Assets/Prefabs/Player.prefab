@@ -512,7 +512,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerMovement
   moveSpeed: 8.5
-  jumpForce: 15
+  jumpForce: 8.5
   dashSpeed: 22
   dashDuration: 0.22
   dashCooldown: 1

@@ -3,6 +3,9 @@ guid: ef628d56685e9474bac1e17f2ed68446
 TextureImporter:
   internalIDToNameTable:
   - first:
+      213: 8888888888888888888
+    second: Player_Text_dead_Banner
+  - first:
       213: -5392075545736278196
     second: Player_Text_dead_0
   - first:
@@ -129,6 +132,28 @@ TextureImporter:
   spriteSheet:
     serializedVersion: 2
     sprites:
+    - serializedVersion: 2
+      name: Player_Text_dead_Banner
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1920
+        height: 1080
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88888888888888888888888888888888
+      internalID: 8888888888888888888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     - serializedVersion: 2
       name: Player_Text_dead_0
       rect:
@@ -385,6 +410,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      Player_Text_dead_Banner: 8888888888888888888
       Player_Text_dead_0: -5392075545736278196
       Player_Text_dead_1: -5405484172654404805
       Player_Text_dead_10: 3019180796931639288

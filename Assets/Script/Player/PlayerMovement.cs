@@ -11,7 +11,8 @@ namespace CaveDweller.Player
     {
         [Header("Movement Settings")]
         [SerializeField] private float moveSpeed = 8.5f;
-        [SerializeField] private float jumpForce = 15.0f;
+        [SerializeField] private float jumpForce = 8.5f;
+        [SerializeField] private float fallGravityMultiplier = 1.6f;
 
         [Header("Dash Settings")]
         [SerializeField] private float dashSpeed = 22.0f;
@@ -137,6 +138,16 @@ namespace CaveDweller.Player
 
             // Move horizontally
             rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
+
+            // Snappy platformer physics: increase gravity when descending to prevent floatiness
+            if (rb.linearVelocity.y < -0.1f)
+            {
+                rb.gravityScale = originalGravity * fallGravityMultiplier;
+            }
+            else
+            {
+                rb.gravityScale = originalGravity;
+            }
         }
 
         private void ReadInput()
@@ -178,6 +189,7 @@ namespace CaveDweller.Player
         private void Jump()
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            CaveDweller.Core.SoundManager.Instance.PlayJumpSFX();
         }
 
         private void CheckGround()
@@ -207,6 +219,7 @@ namespace CaveDweller.Player
             isDashing = true;
 
             EnableEnemyPhasing();
+            CaveDweller.Core.SoundManager.Instance.PlayDashSFX();
 
             rb.gravityScale = 0f;
             float dashDir = horizontalInput != 0f ? Mathf.Sign(horizontalInput) : facingDirection;

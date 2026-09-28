@@ -28,6 +28,12 @@ namespace CaveDweller.Core
         [SerializeField] private GameObject gameOverPanel;
         [SerializeField] private GameObject winPanel;
         [SerializeField] private GameObject hudRoot;
+        [SerializeField] private UnityEngine.UI.Text countdownText;
+        [SerializeField] private UnityEngine.UI.Image deadBannerImage;
+
+        [Header("Death Sequence Settings")]
+        [SerializeField] private float autoRestartDelay = 3.0f;
+        [SerializeField] private string restartSceneName = "First_MAP";
 
         [Header("Time Control")]
         [SerializeField] private float loseTimeScale = 0f;
@@ -205,7 +211,9 @@ namespace CaveDweller.Core
 
         public void RestartGame()
         {
-            ReloadScene();
+            Time.timeScale = 1f;
+            Debug.Log($"[GameFlowManager] Restarting game from: {restartSceneName}");
+            SceneManager.LoadScene(restartSceneName);
         }
 
         private IEnumerator CoPlayLoseSequence()
@@ -223,6 +231,27 @@ namespace CaveDweller.Core
             SetPanelActive(winPanel, false);
             SetPanelActive(gameOverPanel, true);
 
+            // Play death SFX via SoundManager if available
+            SoundManager.Instance.PlayPlayerDeathSFX();
+
+            // Auto-detect countdownText if not assigned
+            if (countdownText == null && gameOverPanel != null)
+            {
+                countdownText = gameOverPanel.GetComponentInChildren<UnityEngine.UI.Text>();
+            }
+
+            float timer = autoRestartDelay;
+            while (timer > 0f)
+            {
+                if (countdownText != null)
+                {
+                    countdownText.text = $"Restarting to First Map in {Mathf.CeilToInt(timer)}s...\n(Press [R] or Click to Skip)";
+                }
+                yield return new WaitForSecondsRealtime(0.1f);
+                timer -= 0.1f;
+            }
+
+            RestartGame();
             flowRoutine = null;
         }
 
@@ -246,27 +275,27 @@ namespace CaveDweller.Core
 
 #if ENABLE_INPUT_SYSTEM
             var kb = Keyboard.current;
-            if (kb != null && kb.rKey.wasPressedThisFrame)
+            if (kb != null && (kb.rKey.wasPressedThisFrame || kb.spaceKey.wasPressedThisFrame))
             {
-                ReloadScene();
+                RestartGame();
                 return;
             }
 
             var mouse = Mouse.current;
             if (mouse != null && mouse.leftButton.wasPressedThisFrame)
             {
-                ReloadScene();
+                RestartGame();
             }
 #else
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.Space))
             {
-                ReloadScene();
+                RestartGame();
                 return;
             }
 
             if (Input.GetMouseButtonDown(0))
             {
-                ReloadScene();
+                RestartGame();
             }
 #endif
         }

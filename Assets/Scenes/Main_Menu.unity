@@ -1115,10 +1115,71 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1972367562}
   m_CullTransparentMesh: 1
+--- !u!1 &991000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 991000002}
+  - component: {fileID: 991000003}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &991000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 991000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &991000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 991000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f9b2d3c4e5a6f7b8c9d0e1f2a3b4c5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Core.SoundManager
+  bgmSource: {fileID: 0}
+  sfxSource: {fileID: 0}
+  victoryMusic: {fileID: 8300000, guid: 417f8ec8b30ddc141af3bc2d3bfc49eb, type: 3}
+  mainMenuMusic: {fileID: 0}
+  caveAmbientMusic: {fileID: 0}
+  bgmVolume: 0.8
+  sfxVolume: 1
+  gunshotSFX: {fileID: 0}
+  playerJumpSFX: {fileID: 0}
+  playerDashSFX: {fileID: 0}
+  playerFootstepSFX: {fileID: 0}
+  playerHurtSFX: {fileID: 0}
+  playerDeathSFX: {fileID: 0}
+  monsterMeleeSFX: {fileID: 0}
+  monsterRangedSFX: {fileID: 0}
+  buttonClickSFX: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 991000002}
   - {fileID: 777196716}
   - {fileID: 629566261}
   - {fileID: 1896639938}

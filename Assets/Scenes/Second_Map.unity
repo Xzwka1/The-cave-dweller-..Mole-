@@ -221,7 +221,6 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 882099900021}
   - component: {fileID: 154970950}
   - component: {fileID: 154970949}
   m_Layer: 0
@@ -393,7 +392,6 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 882099900021}
   - component: {fileID: 239624158}
   - component: {fileID: 239624157}
   m_Layer: 0
@@ -487,7 +485,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700001}
-  - component: {fileID: 882099900021}
   - component: {fileID: 309968683}
   - component: {fileID: 309968682}
   m_Layer: 0
@@ -581,7 +578,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700002}
-  - component: {fileID: 882099900021}
   - component: {fileID: 339275974}
   - component: {fileID: 339275973}
   m_Layer: 0
@@ -675,7 +671,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700003}
-  - component: {fileID: 882099900021}
   - component: {fileID: 494948626}
   - component: {fileID: 494948625}
   m_Layer: 0
@@ -769,7 +764,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700004}
-  - component: {fileID: 882099900021}
   - component: {fileID: 528861907}
   - component: {fileID: 528861906}
   m_Layer: 0
@@ -863,7 +857,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700005}
-  - component: {fileID: 882099900021}
   - component: {fileID: 550633487}
   - component: {fileID: 550633486}
   m_Layer: 0
@@ -957,7 +950,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700006}
-  - component: {fileID: 882099900021}
   - component: {fileID: 763633315}
   - component: {fileID: 763633314}
   m_Layer: 0
@@ -1051,7 +1043,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700007}
-  - component: {fileID: 882099900021}
   - component: {fileID: 804844795}
   - component: {fileID: 804844794}
   m_Layer: 0
@@ -1145,7 +1136,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700008}
-  - component: {fileID: 882099900021}
   - component: {fileID: 858041269}
   - component: {fileID: 858041268}
   m_Layer: 0
@@ -1239,7 +1229,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700009}
-  - component: {fileID: 882099900021}
   - component: {fileID: 1100269841}
   - component: {fileID: 1100269840}
   m_Layer: 0
@@ -1332,7 +1321,6 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 882099900021}
   - component: {fileID: 1113535872}
   - component: {fileID: 1113535871}
   m_Layer: 0
@@ -1426,7 +1414,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700010}
-  - component: {fileID: 882099900021}
   - component: {fileID: 1207010759}
   - component: {fileID: 1207010758}
   m_Layer: 0
@@ -1520,7 +1507,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 882077700011}
-  - component: {fileID: 882099900021}
   - component: {fileID: 1337721148}
   - component: {fileID: 1337721147}
   m_Layer: 0
@@ -1613,7 +1599,6 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 882099900021}
   - component: {fileID: 1365006459}
   - component: {fileID: 1365006458}
   - component: {fileID: 1365006457}
@@ -1743,6 +1728,10 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+  countdownText: {fileID: 882047123850}
+  deadBannerImage: {fileID: 882037972685}
+  autoRestartDelay: 3
+  restartSceneName: First_MAP
 --- !u!1 &1369360315
 GameObject:
   m_ObjectHideFlags: 0
@@ -2602,7 +2591,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 882047123849}
-  - {fileID: 882090001062}
   m_Father: {fileID: 882072682280}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2623,16 +2611,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.1, g: 0.02, b: 0.02, a: 0.88}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 8888888888888888888, guid: ef628d56685e9474bac1e17f2ed68446, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -2894,10 +2882,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 882037972684}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -130}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -260}
+  m_SizeDelta: {x: 800, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &882047123850
 MonoBehaviour:
@@ -2912,7 +2900,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.25, b: 0.25, a: 1}
+  m_Color: {r: 1, g: 0.88, b: 0.45, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2921,7 +2909,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 42
+    m_FontSize: 28
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
@@ -3683,7 +3671,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerMovement
   moveSpeed: 8.5
-  jumpForce: 15
+  jumpForce: 8.5
   dashSpeed: 22
   dashDuration: 0.22
   dashCooldown: 1

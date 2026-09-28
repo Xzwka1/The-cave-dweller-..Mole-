@@ -219,6 +219,9 @@ namespace CaveDweller.Player
                 }
             }
 
+            // Audio feedback
+            CaveDweller.Core.SoundManager.Instance.PlayGunshotSFX();
+
             if (muzzleFlashLight != null)
             {
                 var dynLight = muzzleFlashLight.GetComponent<DynamicMuzzleLight>();
@@ -244,21 +247,25 @@ namespace CaveDweller.Player
             }
 
             List<Collider2D> pelletColliders = new List<Collider2D>();
-            float step = pelletsCount > 1 ? spreadAngle / (pelletsCount - 1) : 0f;
+            float halfSpread = spreadAngle * 0.5f;
 
             for (int i = 0; i < pelletsCount; i++)
             {
-                // Symmetrical fan distribution with middle pellet aligned 100% on mouse cursor
-                float baseOffset = -spreadAngle * 0.5f + i * step;
-                // Middle pellet has zero jitter for pinpoint center shot; side pellets have subtle jitter
-                bool isCenterPellet = (pelletsCount % 2 == 1 && i == pelletsCount / 2);
-                float jitter = isCenterPellet ? 0f : UnityEngine.Random.Range(-step * 0.2f, step * 0.2f);
-                float pelletAngle = centerAngle + baseOffset + jitter;
+                // Organic randomized shotgun spread:
+                // Stratified random sampling across the spread cone with organic scatter flutter
+                float sliceStart = -halfSpread + (i * spreadAngle / pelletsCount);
+                float sliceEnd = sliceStart + (spreadAngle / pelletsCount);
+                float randomAngleOffset = UnityEngine.Random.Range(sliceStart, sliceEnd);
+                float scatterFlutter = UnityEngine.Random.Range(-spreadAngle * 0.12f, spreadAngle * 0.12f);
+                float pelletAngle = centerAngle + Mathf.Clamp(randomAngleOffset + scatterFlutter, -halfSpread * 1.08f, halfSpread * 1.08f);
+
                 float rad = pelletAngle * Mathf.Deg2Rad;
                 Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
 
-                float speedVariance = UnityEngine.Random.Range(0.95f, 1.05f);
+                float speedVariance = UnityEngine.Random.Range(0.88f, 1.14f);
                 float pelletSpeed = projectileSpeed * speedVariance;
+                float rangeVariance = UnityEngine.Random.Range(0.92f, 1.08f);
+                float effectiveRange = bulletRange * rangeVariance;
 
                 if (isProjectilePrefab)
                 {
@@ -271,14 +278,14 @@ namespace CaveDweller.Player
                     }
                     if (proj != null)
                     {
-                        float lifetime = bulletRange / Mathf.Max(pelletSpeed, 1f);
+                        float lifetime = effectiveRange / Mathf.Max(pelletSpeed, 1f);
                         proj.Configure(pelletSpeed, damagePerPellet, lifetime, hitMask);
                         proj.Launch(dir, transform.root.gameObject);
                     }
                 }
                 else
                 {
-                    RaycastHit2D hit = Physics2D.Raycast(origin, dir, bulletRange, hitMask);
+                    RaycastHit2D hit = Physics2D.Raycast(origin, dir, effectiveRange, hitMask);
                     Vector2 endPoint;
 
                     if (hit.collider != null && hit.collider.transform.root != transform.root && !hit.collider.CompareTag("Player"))

@@ -84,6 +84,8 @@ namespace CaveDweller.Player
                 return;
             }
 
+            CaveDweller.Core.SoundManager.Instance.PlayPlayerHurtSFX();
+
             if (invulnerabilityDuration > 0f)
             {
                 if (invulnerabilityCoroutine != null)

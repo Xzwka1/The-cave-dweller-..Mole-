@@ -12,6 +12,11 @@ namespace CaveDweller.Core
         [SerializeField] private string mainMenuSceneName = "Main_Menu";
         [SerializeField] private string firstMapSceneName = "First_MAP";
 
+        private void Start()
+        {
+            SoundManager.Instance.PlayVictoryMusic();
+        }
+
         private void Update()
         {
 #if ENABLE_INPUT_SYSTEM
@@ -41,12 +46,14 @@ namespace CaveDweller.Core
 
         public void BackToMainMenu()
         {
+            SoundManager.Instance.PlayButtonClickSFX();
             Debug.Log("[WinningScreen] Returning to Main Menu...");
             SceneManager.LoadScene(mainMenuSceneName);
         }
 
         public void PlayAgain()
         {
+            SoundManager.Instance.PlayButtonClickSFX();
             Debug.Log("[WinningScreen] Starting game again from First_MAP...");
             SceneManager.LoadScene(firstMapSceneName);
         }

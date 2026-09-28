@@ -160,6 +160,7 @@ namespace CaveDweller.Enemies
         public virtual void DealDamageToPlayer(IDamageable target, int amount)
         {
             if (target == null || target.IsDead) return;
+            CaveDweller.Core.SoundManager.Instance.PlayMonsterMeleeSFX();
             target.TakeDamage(amount);
         }
 
@@ -170,6 +171,7 @@ namespace CaveDweller.Enemies
             if (d == null) d = targetObj.GetComponentInParent<IDamageable>();
             if (d == null) d = targetObj.GetComponentInChildren<IDamageable>();
             if (d == null || d.IsDead) return;
+            CaveDweller.Core.SoundManager.Instance.PlayMonsterMeleeSFX();
             d.TakeDamage(amount);
         }
 
