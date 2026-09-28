@@ -26,8 +26,13 @@ namespace CaveDweller.Enemies
         protected Rigidbody2D cachedRigidbody;
         protected Collider2D cachedCollider;
         protected SpriteRenderer cachedSpriteRenderer;
+        protected Animator cachedAnimator;
         protected Color originalColor;
         protected bool isDying;
+
+        protected int animSpeedHash;
+        protected int animAttackTriggerHash;
+        protected int animShootTriggerHash;
 
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
@@ -36,6 +41,7 @@ namespace CaveDweller.Enemies
         public LayerMask GroundLayer => groundLayer;
         public Rigidbody2D CachedRigidbody => cachedRigidbody;
         public Collider2D CachedCollider => cachedCollider;
+        public Animator Animator => cachedAnimator;
         protected Rigidbody2D rb => cachedRigidbody;
         protected Collider2D col => cachedCollider;
         protected SpriteRenderer spriteRenderer => cachedSpriteRenderer;
@@ -54,6 +60,16 @@ namespace CaveDweller.Enemies
             {
                 cachedSpriteRenderer = GetComponentInChildren<SpriteRenderer>();
             }
+
+            cachedAnimator = GetComponent<Animator>();
+            if (cachedAnimator == null)
+            {
+                cachedAnimator = GetComponentInChildren<Animator>();
+            }
+
+            animSpeedHash = Animator.StringToHash("Speed");
+            animAttackTriggerHash = Animator.StringToHash("Attack");
+            animShootTriggerHash = Animator.StringToHash("Shoot");
 
             if (cachedSpriteRenderer != null)
             {
@@ -160,6 +176,10 @@ namespace CaveDweller.Enemies
         public virtual void DealDamageToPlayer(IDamageable target, int amount)
         {
             if (target == null || target.IsDead) return;
+            if (cachedAnimator != null)
+            {
+                cachedAnimator.SetTrigger(animAttackTriggerHash);
+            }
             CaveDweller.Core.SoundManager.Instance.PlayMonsterMeleeSFX();
             target.TakeDamage(amount);
         }
@@ -171,6 +191,10 @@ namespace CaveDweller.Enemies
             if (d == null) d = targetObj.GetComponentInParent<IDamageable>();
             if (d == null) d = targetObj.GetComponentInChildren<IDamageable>();
             if (d == null || d.IsDead) return;
+            if (cachedAnimator != null)
+            {
+                cachedAnimator.SetTrigger(animAttackTriggerHash);
+            }
             CaveDweller.Core.SoundManager.Instance.PlayMonsterMeleeSFX();
             d.TakeDamage(amount);
         }

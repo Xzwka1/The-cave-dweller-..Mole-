@@ -198,6 +198,11 @@ namespace CaveDweller.Enemies
 
             rb.linearVelocity = new Vector2(horizontalSpeed, rb.linearVelocity.y);
 
+            if (cachedAnimator != null)
+            {
+                cachedAnimator.SetFloat(animSpeedHash, Mathf.Abs(horizontalSpeed));
+            }
+
             if (horizontalSpeed > 0.05f)
             {
                 SetFacing(1f);

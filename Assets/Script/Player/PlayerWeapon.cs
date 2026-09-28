@@ -37,6 +37,8 @@ namespace CaveDweller.Player
         private Coroutine reloadCoroutine;
         private Coroutine flashCoroutine;
         private Camera mainCamera;
+        private Animator playerAnimator;
+        private int animShootTriggerHash;
 
         public int MaxAmmo => maxAmmo;
         public int CurrentAmmo => currentAmmo;
@@ -70,6 +72,13 @@ namespace CaveDweller.Player
             {
                 hitMask = ~((1 << playerLayer) | (1 << 2)); // Exclude Player and Ignore Raycast
             }
+
+            playerAnimator = GetComponentInParent<Animator>();
+            if (playerAnimator == null)
+            {
+                playerAnimator = transform.root.GetComponentInChildren<Animator>();
+            }
+            animShootTriggerHash = Animator.StringToHash("Shoot");
 
             mainCamera = Camera.main;
         }
@@ -221,6 +230,12 @@ namespace CaveDweller.Player
 
             // Audio feedback
             CaveDweller.Core.SoundManager.Instance.PlayGunshotSFX();
+
+            // Character shoot recoil animation feedback
+            if (playerAnimator != null)
+            {
+                playerAnimator.SetTrigger(animShootTriggerHash);
+            }
 
             if (muzzleFlashLight != null)
             {

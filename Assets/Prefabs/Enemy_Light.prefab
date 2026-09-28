@@ -114,6 +114,7 @@ GameObject:
   - component: {fileID: 7808238294987789407}
   - component: {fileID: 830768994498672362}
   - component: {fileID: 4046987609390356799}
+  - component: {fileID: 1397457424944220399}
   m_Layer: 7
   m_Name: Enemy_Light
   m_TagString: Untagged
@@ -308,3 +309,25 @@ MonoBehaviour:
   attackCooldown: 1
   wallCheckDistance: 0.3
   currentState: 0
+--- !u!95 &1397457424944220399
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8178761939870864670}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 45c6f87bff48edb44b6387e907ad69b2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

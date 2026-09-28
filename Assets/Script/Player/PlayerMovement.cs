@@ -25,10 +25,26 @@ namespace CaveDweller.Player
         [SerializeField] private LayerMask groundLayer;
         [SerializeField] private float groundCheckDistance = 0.15f;
 
+        [Header("Animation")]
+        [SerializeField] private Animator animator;
+        [SerializeField] private string dashTriggerName = "Dash";
+        [SerializeField] private string dashBackTriggerName = "DashBack";
+        [SerializeField] private string jumpTriggerName = "Jump";
+        [SerializeField] private string isDashingBoolName = "IsDashing";
+        [SerializeField] private string speedFloatName = "Speed";
+        [SerializeField] private string isGroundedBoolName = "IsGrounded";
+
         private Rigidbody2D rb;
         private Collider2D col;
         private SpriteRenderer spriteRenderer;
         private PlayerHealth playerHealth;
+
+        private int animDashTriggerHash;
+        private int animDashBackTriggerHash;
+        private int animJumpTriggerHash;
+        private int animIsDashingHash;
+        private int animSpeedHash;
+        private int animIsGroundedHash;
 
         private float horizontalInput;
         private bool isGrounded;
@@ -41,6 +57,7 @@ namespace CaveDweller.Player
         public bool IsGrounded => isGrounded;
         public bool IsDashing => isDashing;
         public float FacingDirection => facingDirection;
+        public Animator Animator => animator;
 
         private void Awake()
         {
@@ -49,6 +66,22 @@ namespace CaveDweller.Player
             spriteRenderer = GetComponent<SpriteRenderer>();
             playerHealth = GetComponent<PlayerHealth>();
             originalGravity = rb.gravityScale;
+
+            if (animator == null)
+            {
+                animator = GetComponent<Animator>();
+                if (animator == null)
+                {
+                    animator = GetComponentInChildren<Animator>();
+                }
+            }
+
+            animDashTriggerHash = Animator.StringToHash(dashTriggerName);
+            animDashBackTriggerHash = Animator.StringToHash(dashBackTriggerName);
+            animJumpTriggerHash = Animator.StringToHash(jumpTriggerName);
+            animIsDashingHash = Animator.StringToHash(isDashingBoolName);
+            animSpeedHash = Animator.StringToHash(speedFloatName);
+            animIsGroundedHash = Animator.StringToHash(isGroundedBoolName);
 
             if (groundLayer.value == 0)
             {
@@ -130,6 +163,12 @@ namespace CaveDweller.Player
                     }
                 }
             }
+
+            if (animator != null)
+            {
+                animator.SetFloat(animSpeedHash, Mathf.Abs(horizontalInput));
+                animator.SetBool(animIsGroundedHash, isGrounded);
+            }
         }
 
         private void FixedUpdate()
@@ -173,13 +212,18 @@ namespace CaveDweller.Player
             }
 #else
             horizontalInput = Input.GetAxisRaw("Horizontal");
+            if (Mathf.Abs(horizontalInput) < 0.01f)
+            {
+                if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) horizontalInput -= 1f;
+                if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) horizontalInput += 1f;
+            }
 
-            if (Input.GetButtonDown("Jump") && isGrounded)
+            if ((Input.GetButtonDown("Jump") || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
             {
                 Jump();
             }
 
-            if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+            if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift)) && canDash)
             {
                 StartCoroutine(PerformDash());
             }
@@ -189,6 +233,10 @@ namespace CaveDweller.Player
         private void Jump()
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            if (animator != null)
+            {
+                animator.SetTrigger(animJumpTriggerHash);
+            }
             CaveDweller.Core.SoundManager.Instance.PlayJumpSFX();
         }
 
@@ -223,12 +271,34 @@ namespace CaveDweller.Player
 
             rb.gravityScale = 0f;
             float dashDir = horizontalInput != 0f ? Mathf.Sign(horizontalInput) : facingDirection;
+            bool isBackward = (horizontalInput != 0f && Mathf.Sign(horizontalInput) != facingDirection);
+
+            // Trigger dash animation in Animator (forward or backward)
+            if (animator != null)
+            {
+                animator.SetBool(animIsDashingHash, true);
+                if (isBackward)
+                {
+                    animator.SetTrigger(animDashBackTriggerHash);
+                }
+                else
+                {
+                    animator.SetTrigger(animDashTriggerHash);
+                }
+            }
+
             rb.linearVelocity = new Vector2(dashDir * dashSpeed, 0f);
 
             yield return new WaitForSeconds(dashDuration);
 
             rb.gravityScale = originalGravity;
             isDashing = false;
+
+            // Dash movement complete, transition back to standard movement/idle
+            if (animator != null)
+            {
+                animator.SetBool(animIsDashingHash, false);
+            }
 
             // Grace period for I-frames and phasing through enemies
             if (postDashGraceTime > 0f)

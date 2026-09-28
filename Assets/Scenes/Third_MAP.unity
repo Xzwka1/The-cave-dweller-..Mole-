@@ -2622,6 +2622,7 @@ GameObject:
   - component: {fileID: 883001068912}
   - component: {fileID: 883001068911}
   - component: {fileID: 883001068910}
+  - component: {fileID: 883001068915}
   m_Layer: 7
   m_Name: AmbushEnemy
   m_TagString: Untagged
@@ -2810,6 +2811,28 @@ Transform:
   - {fileID: 883007011024}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &883001068915
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883001068909}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 45c6f87bff48edb44b6387e907ad69b2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &883006015304
 GameObject:
   m_ObjectHideFlags: 0
@@ -2823,6 +2846,7 @@ GameObject:
   - component: {fileID: 883006015307}
   - component: {fileID: 883006015306}
   - component: {fileID: 883006015305}
+  - component: {fileID: 883006015310}
   m_Layer: 7
   m_Name: PatrolEnemy
   m_TagString: Untagged
@@ -3017,6 +3041,28 @@ Transform:
   - {fileID: 883074603077}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &883006015310
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883006015304}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 45c6f87bff48edb44b6387e907ad69b2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &883006637557
 GameObject:
   m_ObjectHideFlags: 0
@@ -5077,6 +5123,7 @@ GameObject:
   - component: {fileID: 883084980712}
   - component: {fileID: 883084980716}
   - component: {fileID: 883084980717}
+  - component: {fileID: 883084980718}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -5260,6 +5307,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   groundCheckDistance: 0.15
+  animator: {fileID: 0}
+  dashTriggerName: Dash
+  isDashingBoolName: IsDashing
+  speedFloatName: Speed
+  isGroundedBoolName: IsGrounded
 --- !u!114 &883084980717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5277,6 +5329,28 @@ MonoBehaviour:
   spriteRenderer: {fileID: 883084980714}
   hitFlashColor: {r: 1, g: 0.4, b: 0.4, a: 0.7}
   flashInterval: 0.08
+--- !u!95 &883084980718
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883084980711}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 47a0061452c98e042adb152904397a55, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &883087718505
 GameObject:
   m_ObjectHideFlags: 0

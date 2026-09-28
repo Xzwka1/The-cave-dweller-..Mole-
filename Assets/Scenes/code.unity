@@ -224,10 +224,6 @@ MonoBehaviour:
       type: {class: 'Provider2DCache`1[[UnityEngine.Rendering.Universal.Light2DProvider, Unity.RenderPipelines.Universal.2D.Runtime]]', ns: UnityEngine.Rendering.Universal, asm: Unity.RenderPipelines.Universal.2D.Runtime}
       data:
         m_Cache: []
-  countdownText: {fileID: 447123850}
-  deadBannerImage: {fileID: 237972685}
-  autoRestartDelay: 3
-  restartSceneName: First_MAP
 --- !u!1 &126898988
 GameObject:
   m_ObjectHideFlags: 0
@@ -1835,7 +1831,10 @@ MonoBehaviour:
   target: {fileID: 884980715}
   offset: {x: 0, y: 1.2, z: -10}
   smoothSpeed: 0.15
-  minZoom: 5.0
+  enableMouseLookAhead: 1
+  maxLookAheadDistance: 3.5
+  mouseInfluence: 0.32
+  minZoom: 5
   maxZoom: 11.5
   zoomSensitivity: 1.5
   zoomSmoothSpeed: 10
@@ -1890,6 +1889,8 @@ MonoBehaviour:
   spreadAngle: 18
   bulletRange: 22
   damagePerPellet: 20
+  recoilForce: 1.6
+  screenShakeMagnitude: 0.07
   hitMask:
     serializedVersion: 2
     m_Bits: 4294967227
@@ -1911,6 +1912,7 @@ GameObject:
   - component: {fileID: 601068912}
   - component: {fileID: 601068911}
   - component: {fileID: 601068910}
+  - component: {fileID: 601068915}
   m_Layer: 7
   m_Name: AmbushEnemy
   m_TagString: Untagged
@@ -2092,13 +2094,35 @@ Transform:
   m_GameObject: {fileID: 601068909}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.0, y: 0.16, z: 0}
+  m_LocalPosition: {x: -2, y: 0.16, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1207011024}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &601068915
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601068909}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 45c6f87bff48edb44b6387e907ad69b2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &627146673
 GameObject:
   m_ObjectHideFlags: 0
@@ -2570,6 +2594,7 @@ GameObject:
   - component: {fileID: 884980712}
   - component: {fileID: 884980716}
   - component: {fileID: 884980717}
+  - component: {fileID: 884980718}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -2741,13 +2766,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerMovement
   moveSpeed: 8.5
   jumpForce: 8.5
+  fallGravityMultiplier: 1.6
   dashSpeed: 22
   dashDuration: 0.22
   dashCooldown: 1
+  postDashGraceTime: 0.1
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 0
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
   groundCheckDistance: 0.15
+  animator: {fileID: 0}
+  dashTriggerName: Dash
+  isDashingBoolName: IsDashing
+  speedFloatName: Speed
+  isGroundedBoolName: IsGrounded
 --- !u!114 &884980717
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2765,6 +2800,28 @@ MonoBehaviour:
   spriteRenderer: {fileID: 884980714}
   hitFlashColor: {r: 1, g: 0.4, b: 0.4, a: 0.7}
   flashInterval: 0.08
+--- !u!95 &884980718
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 884980711}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 47a0061452c98e042adb152904397a55, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &974603075
 GameObject:
   m_ObjectHideFlags: 0
@@ -2992,7 +3049,7 @@ Transform:
   m_GameObject: {fileID: 1323102211}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.0, y: -3.5, z: 0}
+  m_LocalPosition: {x: 1, y: -3.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3033,6 +3090,10 @@ MonoBehaviour:
   gameOverPanel: {fileID: 237972683}
   winPanel: {fileID: 531282018}
   hudRoot: {fileID: 2062108251}
+  countdownText: {fileID: 0}
+  deadBannerImage: {fileID: 0}
+  autoRestartDelay: 3
+  restartSceneName: First_MAP
   loseTimeScale: 0
   winTimeScale: 0
   loseSlowMotionScale: 0.2
@@ -3067,6 +3128,7 @@ GameObject:
   - component: {fileID: 1906015307}
   - component: {fileID: 1906015306}
   - component: {fileID: 1906015305}
+  - component: {fileID: 1906015310}
   m_Layer: 7
   m_Name: PatrolEnemy
   m_TagString: Untagged
@@ -3261,6 +3323,28 @@ Transform:
   - {fileID: 974603077}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &1906015310
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1906015304}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 45c6f87bff48edb44b6387e907ad69b2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1994056559
 GameObject:
   m_ObjectHideFlags: 0
@@ -3387,7 +3471,7 @@ Transform:
   m_GameObject: {fileID: 2006637557}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.0, y: -3.5, z: 0}
+  m_LocalPosition: {x: 4, y: -3.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3421,37 +3505,15 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 810189209}  - {fileID: 884090001002}
-
+  - {fileID: 810189209}
+  - {fileID: 884090001002}
   m_Father: {fileID: 872682280}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.9}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1660057539 &9223372036854775807
-SceneRoots:
-  m_ObjectHideFlags: 0
-  m_Roots:
-  - {fileID: 567415379}
-  - {fileID: 507837099}
-  - {fileID: 884980715}
-  - {fileID: 162131757}
-  - {fileID: 1994056561}
-  - {fileID: 684053667}
-  - {fileID: 479532469}
-  - {fileID: 406846949}
-  - {fileID: 408474407}
-  - {fileID: 416650793}
-  - {fileID: 468939402}
-  - {fileID: 1906015309}
-  - {fileID: 1323102212}
-  - {fileID: 2006637558}
-  - {fileID: 601068914}
-  - {fileID: 1416471137}
-  - {fileID: 872682280}
-  - {fileID: 126898991}
 --- !u!1 &884090001001
 GameObject:
   m_ObjectHideFlags: 0
@@ -3491,6 +3553,30 @@ RectTransform:
   m_AnchoredPosition: {x: 160, y: -45}
   m_SizeDelta: {x: 280, y: 84}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &884090001003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 884090001001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 879f8deba99d45ca9fbdad56f2f1002f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerHealthUI
+  playerHealth: {fileID: 0}
+  healthSlider: {fileID: 0}
+  healthBarFill: {fileID: 884090001014}
+  healthBarBackground: {fileID: 884090001005}
+  smoothDrain: 1
+  drainSpeed: 5
+  healthIcons: []
+  fullHealthSprite: {fileID: 0}
+  emptyHealthSprite: {fileID: 0}
+  animateOnDamage: 1
+  punchScale: 1.1
+  punchDuration: 0.12
 --- !u!222 &884090001004
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3529,30 +3615,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &884090001003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 884090001001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 879f8deba99d45ca9fbdad56f2f1002f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerHealthUI
-  playerHealth: {fileID: 0}
-  healthSlider: {fileID: 0}
-  healthBarFill: {fileID: 884090001014}
-  healthBarBackground: {fileID: 884090001005}
-  smoothDrain: 1
-  drainSpeed: 5
-  healthIcons: []
-  fullHealthSprite: {fileID: 0}
-  emptyHealthSprite: {fileID: 0}
-  animateOnDamage: 1
-  punchScale: 1.1
-  punchDuration: 0.12
 --- !u!1 &884090001011
 GameObject:
   m_ObjectHideFlags: 0
@@ -3628,3 +3690,25 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 567415379}
+  - {fileID: 507837099}
+  - {fileID: 884980715}
+  - {fileID: 162131757}
+  - {fileID: 1994056561}
+  - {fileID: 684053667}
+  - {fileID: 479532469}
+  - {fileID: 406846949}
+  - {fileID: 408474407}
+  - {fileID: 416650793}
+  - {fileID: 468939402}
+  - {fileID: 1906015309}
+  - {fileID: 1323102212}
+  - {fileID: 2006637558}
+  - {fileID: 601068914}
+  - {fileID: 1416471137}
+  - {fileID: 872682280}
+  - {fileID: 126898991}

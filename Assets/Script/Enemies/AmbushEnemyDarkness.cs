@@ -224,6 +224,10 @@ namespace CaveDweller.Enemies
         {
             isLunging = true;
             lastLungeTime = Time.time;
+            if (cachedAnimator != null)
+            {
+                cachedAnimator.SetTrigger(animAttackTriggerHash);
+            }
             if (rb != null)
             {
                 rb.gravityScale = originalGravity;
