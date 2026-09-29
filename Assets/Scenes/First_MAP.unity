@@ -7305,6 +7305,8 @@ MonoBehaviour:
   groundCheckDistance: 0.15
   animator: {fileID: 0}
   dashTriggerName: Dash
+  dashBackTriggerName: DashBack
+  jumpTriggerName: Jump
   isDashingBoolName: IsDashing
   speedFloatName: Speed
   isGroundedBoolName: IsGrounded
@@ -7675,7 +7677,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b346418e382bbc140b75a591ff66c193, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MAP_Teleporter
-  nextSceneName: Second_Map
+  nextSceneName: Winning_Map
 --- !u!114 &881099900021
 MonoBehaviour:
   m_ObjectHideFlags: 0
