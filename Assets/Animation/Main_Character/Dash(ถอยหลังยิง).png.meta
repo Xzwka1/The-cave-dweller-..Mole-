@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: 56d91da6423dc8a4fbf28724ec7a3073
+guid: 5ad96ca56b27b794eab2221b9e221e5d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5201724334718584832
-    second: "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07)_0"
+      213: 9084699588129254093
+    second: "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07\u0E22\u0E34\u0E07)_0"
   - first:
-      213: -7857552433172199312
-    second: "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07)_1"
+      213: -8683869042545018081
+    second: "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07\u0E22\u0E34\u0E07)_1"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -116,7 +116,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07)_0"
+      name: "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07\u0E22\u0E34\u0E07)_0"
       rect:
         serializedVersion: 2
         x: 1435
@@ -131,19 +131,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 008f7990743cfc7b0800000000000000
-      internalID: -5201724334718584832
+      spriteID: dcae4918426531e70800000000000000
+      internalID: 9084699588129254093
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07)_1"
+      name: "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07\u0E22\u0E34\u0E07)_1"
       rect:
         serializedVersion: 2
         x: 1443
         y: 87
-        width: 1125
+        width: 1638
         height: 2595
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -153,8 +153,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 078c3c071bd54f290800000000000000
-      internalID: -7857552433172199312
+      spriteID: f1bb71b6d13bc7780800000000000000
+      internalID: -8683869042545018081
       vertices: []
       indices: 
       edges: []
@@ -173,8 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07)_0": -5201724334718584832
-      "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07)_1": -7857552433172199312
+      "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07\u0E22\u0E34\u0E07)_0": 9084699588129254093
+      "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07\u0E22\u0E34\u0E07)_1": -8683869042545018081
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "Dash(\u0E01\u0E23\u0E30\u0E42\u0E14\u0E14\u0E22\u0E34\u0E07)"
+  m_Name: "Dash(\u0E16\u0E2D\u0E22\u0E2B\u0E25\u0E31\u0E07\u0E22\u0E34\u0E07)"
   serializedVersion: 8
   m_Legacy: 0
   m_Compressed: 0
@@ -21,11 +21,11 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: 8239632857146891933, guid: 711209f9fd51ee9468deec801c308068, type: 3}
+      value: {fileID: 6319369549766574560, guid: 306c2281889712e40a446a158394ba98, type: 3}
     - time: 0.06666667
-      value: {fileID: 3285638558420565481, guid: 770f4ef2e8a2b82479afcd96a4cdcaad, type: 3}
-    - time: 0.23333333
-      value: {fileID: 3285638558420565481, guid: 770f4ef2e8a2b82479afcd96a4cdcaad, type: 3}
+      value: {fileID: -8683869042545018081, guid: 5ad96ca56b27b794eab2221b9e221e5d, type: 3}
+    - time: 0.4
+      value: {fileID: -8683869042545018081, guid: 5ad96ca56b27b794eab2221b9e221e5d, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -49,15 +49,15 @@ AnimationClip:
       isSerializeReferenceCurve: 0
       metaData: 0
     pptrCurveMapping:
-    - {fileID: 8239632857146891933, guid: 711209f9fd51ee9468deec801c308068, type: 3}
-    - {fileID: 3285638558420565481, guid: 770f4ef2e8a2b82479afcd96a4cdcaad, type: 3}
-    - {fileID: 3285638558420565481, guid: 770f4ef2e8a2b82479afcd96a4cdcaad, type: 3}
+    - {fileID: 6319369549766574560, guid: 306c2281889712e40a446a158394ba98, type: 3}
+    - {fileID: -8683869042545018081, guid: 5ad96ca56b27b794eab2221b9e221e5d, type: 3}
+    - {fileID: -8683869042545018081, guid: 5ad96ca56b27b794eab2221b9e221e5d, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.25
+    m_StopTime: 0.4166667
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
