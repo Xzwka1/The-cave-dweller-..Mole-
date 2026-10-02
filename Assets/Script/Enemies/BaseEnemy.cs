@@ -33,6 +33,8 @@ namespace CaveDweller.Enemies
         protected int animSpeedHash;
         protected int animAttackTriggerHash;
         protected int animShootTriggerHash;
+        protected int animIsAttackingHash;
+        protected int animIsWalkingHash;
 
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
@@ -70,6 +72,8 @@ namespace CaveDweller.Enemies
             animSpeedHash = Animator.StringToHash("Speed");
             animAttackTriggerHash = Animator.StringToHash("Attack");
             animShootTriggerHash = Animator.StringToHash("Shoot");
+            animIsAttackingHash = Animator.StringToHash("IsAttacking");
+            animIsWalkingHash = Animator.StringToHash("IsWalking");
 
             if (cachedSpriteRenderer != null)
             {
@@ -179,6 +183,8 @@ namespace CaveDweller.Enemies
             if (cachedAnimator != null)
             {
                 cachedAnimator.SetTrigger(animAttackTriggerHash);
+                cachedAnimator.SetBool(animIsAttackingHash, true);
+                StartCoroutine(ResetAttackBoolRoutine());
             }
             CaveDweller.Core.SoundManager.Instance.PlayMonsterMeleeSFX();
             target.TakeDamage(amount);
@@ -194,9 +200,20 @@ namespace CaveDweller.Enemies
             if (cachedAnimator != null)
             {
                 cachedAnimator.SetTrigger(animAttackTriggerHash);
+                cachedAnimator.SetBool(animIsAttackingHash, true);
+                StartCoroutine(ResetAttackBoolRoutine());
             }
             CaveDweller.Core.SoundManager.Instance.PlayMonsterMeleeSFX();
             d.TakeDamage(amount);
+        }
+
+        private IEnumerator ResetAttackBoolRoutine()
+        {
+            yield return new WaitForSeconds(0.4f);
+            if (cachedAnimator != null)
+            {
+                cachedAnimator.SetBool(animIsAttackingHash, false);
+            }
         }
 
         public virtual void DealDamageToPlayer()

@@ -43,12 +43,16 @@ namespace CaveDweller.Player
         private int animDashBackTriggerHash;
         private int animJumpTriggerHash;
         private int animIsDashingHash;
+        private int animIsDashingBackHash;
+        private int animIsWalkingHash;
+        private int animIsJumpingHash;
         private int animSpeedHash;
         private int animIsGroundedHash;
 
         private float horizontalInput;
         private bool isGrounded;
         private bool isDashing;
+        private bool isDashingBackward;
         private bool canDash = true;
         private bool isPhasingEnemies;
         private float facingDirection = 1f; // 1 = Right, -1 = Left
@@ -56,6 +60,7 @@ namespace CaveDweller.Player
 
         public bool IsGrounded => isGrounded;
         public bool IsDashing => isDashing;
+        public bool IsDashingBackward => isDashing && isDashingBackward;
         public float FacingDirection => facingDirection;
         public Animator Animator => animator;
 
@@ -80,6 +85,9 @@ namespace CaveDweller.Player
             animDashBackTriggerHash = Animator.StringToHash(dashBackTriggerName);
             animJumpTriggerHash = Animator.StringToHash(jumpTriggerName);
             animIsDashingHash = Animator.StringToHash(isDashingBoolName);
+            animIsDashingBackHash = Animator.StringToHash("IsDashing(ถอยหลัง)");
+            animIsWalkingHash = Animator.StringToHash("IsWalking");
+            animIsJumpingHash = Animator.StringToHash("IsJumping");
             animSpeedHash = Animator.StringToHash(speedFloatName);
             animIsGroundedHash = Animator.StringToHash(isGroundedBoolName);
 
@@ -168,6 +176,8 @@ namespace CaveDweller.Player
             {
                 animator.SetFloat(animSpeedHash, Mathf.Abs(horizontalInput));
                 animator.SetBool(animIsGroundedHash, isGrounded);
+                animator.SetBool(animIsWalkingHash, Mathf.Abs(horizontalInput) > 0.05f && isGrounded);
+                animator.SetBool(animIsJumpingHash, !isGrounded);
             }
         }
 
@@ -272,11 +282,13 @@ namespace CaveDweller.Player
             rb.gravityScale = 0f;
             float dashDir = horizontalInput != 0f ? Mathf.Sign(horizontalInput) : facingDirection;
             bool isBackward = (horizontalInput != 0f && Mathf.Sign(horizontalInput) != facingDirection);
+            isDashingBackward = isBackward;
 
             // Trigger dash animation in Animator (forward or backward)
             if (animator != null)
             {
-                animator.SetBool(animIsDashingHash, true);
+                animator.SetBool(animIsDashingHash, !isBackward);
+                animator.SetBool(animIsDashingBackHash, isBackward);
                 if (isBackward)
                 {
                     animator.SetTrigger(animDashBackTriggerHash);
@@ -293,11 +305,13 @@ namespace CaveDweller.Player
 
             rb.gravityScale = originalGravity;
             isDashing = false;
+            isDashingBackward = false;
 
             // Dash movement complete, transition back to standard movement/idle
             if (animator != null)
             {
                 animator.SetBool(animIsDashingHash, false);
+                animator.SetBool(animIsDashingBackHash, false);
             }
 
             // Grace period for I-frames and phasing through enemies

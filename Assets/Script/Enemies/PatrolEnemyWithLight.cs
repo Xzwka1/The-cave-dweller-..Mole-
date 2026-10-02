@@ -201,6 +201,7 @@ namespace CaveDweller.Enemies
             if (cachedAnimator != null)
             {
                 cachedAnimator.SetFloat(animSpeedHash, Mathf.Abs(horizontalSpeed));
+                cachedAnimator.SetBool(animIsWalkingHash, Mathf.Abs(horizontalSpeed) > 0.05f);
             }
 
             if (horizontalSpeed > 0.05f)

@@ -39,6 +39,12 @@ namespace CaveDweller.Player
         private Camera mainCamera;
         private Animator playerAnimator;
         private int animShootTriggerHash;
+        private int animIsShootingHash;
+        private int animIsJumpShootingHash;
+        private int animIsDashingShootHash;
+        private int animIsDashingBackShootHash;
+        private int animIsDashingJumpShootHash;
+        private int animIsDashingBackJumpShootHash;
 
         public int MaxAmmo => maxAmmo;
         public int CurrentAmmo => currentAmmo;
@@ -79,6 +85,12 @@ namespace CaveDweller.Player
                 playerAnimator = transform.root.GetComponentInChildren<Animator>();
             }
             animShootTriggerHash = Animator.StringToHash("Shoot");
+            animIsShootingHash = Animator.StringToHash("IsShooting");
+            animIsJumpShootingHash = Animator.StringToHash("IsJumpShooting");
+            animIsDashingShootHash = Animator.StringToHash("IsDashingShoot(พุ่งยิง)");
+            animIsDashingBackShootHash = Animator.StringToHash("IsDashing(ถอยหลังยิง)");
+            animIsDashingJumpShootHash = Animator.StringToHash("IsDashing(กระโดดยิง)");
+            animIsDashingBackJumpShootHash = Animator.StringToHash("IsDashingShoot(พุ่งถอยหลังยิง)");
 
             mainCamera = Camera.main;
         }
@@ -235,6 +247,7 @@ namespace CaveDweller.Player
             if (playerAnimator != null)
             {
                 playerAnimator.SetTrigger(animShootTriggerHash);
+                StartCoroutine(SetShootingStateRoutine());
             }
 
             if (muzzleFlashLight != null)
@@ -405,6 +418,51 @@ namespace CaveDweller.Player
             currentAmmo = maxAmmo;
             isReloading = false;
             reloadCoroutine = null;
+        }
+
+        private IEnumerator SetShootingStateRoutine()
+        {
+            if (playerAnimator != null)
+            {
+                playerAnimator.SetBool(animIsShootingHash, true);
+                var pm = transform.root.GetComponent<PlayerMovement>();
+                if (pm != null)
+                {
+                    if (!pm.IsGrounded)
+                    {
+                        if (pm.IsDashing)
+                        {
+                            if (pm.IsDashingBackward)
+                                playerAnimator.SetBool(animIsDashingBackJumpShootHash, true);
+                            else
+                                playerAnimator.SetBool(animIsDashingJumpShootHash, true);
+                        }
+                        else
+                        {
+                            playerAnimator.SetBool(animIsJumpShootingHash, true);
+                        }
+                    }
+                    else if (pm.IsDashing)
+                    {
+                        if (pm.IsDashingBackward)
+                            playerAnimator.SetBool(animIsDashingBackShootHash, true);
+                        else
+                            playerAnimator.SetBool(animIsDashingShootHash, true);
+                    }
+                }
+            }
+
+            yield return new WaitForSeconds(0.18f);
+
+            if (playerAnimator != null)
+            {
+                playerAnimator.SetBool(animIsShootingHash, false);
+                playerAnimator.SetBool(animIsJumpShootingHash, false);
+                playerAnimator.SetBool(animIsDashingShootHash, false);
+                playerAnimator.SetBool(animIsDashingBackShootHash, false);
+                playerAnimator.SetBool(animIsDashingJumpShootHash, false);
+                playerAnimator.SetBool(animIsDashingBackJumpShootHash, false);
+            }
         }
 
         private IEnumerator MuzzleFlashCoroutine()

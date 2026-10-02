@@ -18,10 +18,19 @@
 | **06** | **Enemy 2: Ambush in the Dark** | **Claude** | **DONE ✅** | `AmbushEnemyDarkness.cs` เสร็จ, proximity 2.5m + ILightDetectable |
 | **07** | **Player Health & Combat Feedback** (100 HP, -20 DMG) | **Claude** | **DONE ✅** | `PlayerHealth.cs` เสร็จ, I-frames 0.5s, เรียก GameFlowManager |
 | **08** | **Level Loop: Exit Door & Win/Lose State** | Gemini / Claude | **DONE ✅** | `GameFlowManager.cs` + Tag ExitDoor เสร็จ, compile 0 error |
+| **09** | **Animation Consolidation & Sprite Scaling** | Gemini | **DONE ✅** | รวม 11 ท่าลง Controller เดียว, ปรับสเกล PPU 1300, ลบไฟล์ขยะและ Ghost Objects เกลี้ยง |
 
 ---
 
-## 📝 บันทึกความคืบหน้าล่าสุด (อัปเดต 2026-09-22 — Gemini & Claude Full Integration):
+## 📝 บันทึกความคืบหน้าล่าสุด:
+- ✅ **Cleaned & Consolidated Animation System (2026-09-30):**
+  - รวมคลิปแอนิเมชัน Player ทั้งหมด 11 ท่าเข้าสู่ `Animator Controller Character.controller` (Idle, Walk, Jump, Dash, Dash ถอยหลัง, ยิงปกติ, กระโดดยิง, พุ่งยิง, ถอยหลังยิง, พุ่งกระโดดยิง, ถอยหลังกระโดดยิง)
+  - ปรับปรุงโค้ด `PlayerMovement.cs` และ `PlayerWeapon.cs` ให้ trigger ท่า Dash และยิงกลางอากาศครบทุกทิศทาง
+  - แก้บั๊กตัวละครยักษ์บังมิดจอ: ปรับ `spritePixelsToUnits` จาก 100 เป็น 1300 (ขนาดตัวเหลือ ~1.95m พอดีกับ BoxCollider2D) และตั้งค่า Pivot กึ่งกลางตัว `(0.5, 0.5)` ทุกสไปรต์ ท่าไม่เด้งหลุดตำแหน่ง
+  - ลบ Ghost/Dummy Preview GameObjects ในฉาก `First_MAP.unity` ที่เพื่อนลากทิ้งไว้บนฟ้า (y=45) ออกทั้งหมด 11 ตัว
+  - กำจัดไฟล์ Controller ขยะ 4 ไฟล์ (`Rapid2(หันขวา)`, `Rapid2(หันขวา)_0 (7)`, `หันขวา`, `หันขวา(ส่วนว่าง)`) และ Orphan Clips ขยะ 4 ไฟล์เกลี้ยงโปรเจกต์
+  - โปรเจกต์สะอาด 100% ไม่มี Missing Controller warning และ C# Build 0 errors!
+
 - ✅ Task 01–08 ครบถ้วน 100% — ทั้งฝั่ง C# Core Logic (Claude) และ Scene Integration (Gemini)
 - ✅ `Player`: ติดตั้ง `PlayerHealth` (100 HP), `PlayerWeapon` (Shotgun 2 นัด + 360° Mouse Aim), `DynamicMuzzleLight`, `PlayerAmbientLight` (Point Light 2D), ปรับ Ground Layer แก้บั๊กกระโดดไม่ได้
 - ✅ `Enemies`:
