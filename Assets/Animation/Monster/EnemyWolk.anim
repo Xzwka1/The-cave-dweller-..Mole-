@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "Dash(\u0E1E\u0E38\u0E48\u0E07\u0E22\u0E34\u0E07)"
+  m_Name: EnemyWolk
   serializedVersion: 8
   m_Legacy: 0
   m_Compressed: 0
@@ -21,9 +21,13 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -2100943455076056701, guid: 81ca525607c140648973e1c1e0844ed6, type: 3}
-    - time: 0.23333333
-      value: {fileID: -2100943455076056701, guid: 81ca525607c140648973e1c1e0844ed6, type: 3}
+      value: {fileID: 7455387962738063480, guid: 9c9d4e763f6c6404b9f002032b957eb7, type: 3}
+    - time: 0.15
+      value: {fileID: 341218873613881961, guid: d26f88a264741a24ab65152f7c11da7d, type: 3}
+    - time: 0.3
+      value: {fileID: 4228266964523757196, guid: 60b515d42ffc0364a9eec2b6bef0d787, type: 3}
+    - time: 0.45
+      value: {fileID: 341218873613881961, guid: d26f88a264741a24ab65152f7c11da7d, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -47,14 +51,16 @@ AnimationClip:
       isSerializeReferenceCurve: 0
       metaData: 0
     pptrCurveMapping:
-    - {fileID: -2100943455076056701, guid: 81ca525607c140648973e1c1e0844ed6, type: 3}
-    - {fileID: -2100943455076056701, guid: 81ca525607c140648973e1c1e0844ed6, type: 3}
+    - {fileID: 7455387962738063480, guid: 9c9d4e763f6c6404b9f002032b957eb7, type: 3}
+    - {fileID: 341218873613881961, guid: d26f88a264741a24ab65152f7c11da7d, type: 3}
+    - {fileID: 4228266964523757196, guid: 60b515d42ffc0364a9eec2b6bef0d787, type: 3}
+    - {fileID: 341218873613881961, guid: d26f88a264741a24ab65152f7c11da7d, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.25
+    m_StopTime: 0.46666667
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
