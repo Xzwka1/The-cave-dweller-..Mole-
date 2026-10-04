@@ -84,7 +84,7 @@ namespace CaveDweller.Player
                 return;
             }
 
-            CaveDweller.Core.SoundManager.Instance.PlayPlayerHurtSFX();
+            CaveDweller.Core.SoundManager.Instance?.PlayPlayerHurtSFX();
 
             if (invulnerabilityDuration > 0f)
             {
@@ -182,7 +182,5 @@ namespace CaveDweller.Player
         {
             TakeDamage(EnemyHitDamage);
         }
-
-        public bool CanHeal => false;
     }
 }

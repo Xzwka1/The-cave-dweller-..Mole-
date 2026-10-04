@@ -70,6 +70,6 @@ graph TD
 ---
 
 ## 4. 🗂️ เอกสารอ้างอิงของโปรเจกต์
-- 📐 **Game Architecture:** [game-architect.md](file:///e:/Unity/The-cave-dweller-..Mole-/game-architect.md)
+- 📐 **Game Architecture:** [game-architect.md](game-architect.md)
 - 📄 **Game Design Document:** [GDD Overview for MVP (Rapid Game) II.pdf](file:///e:/Unity/The-cave-dweller-..Mole-/Ai%20Assitance/GDD%20Overview%20for%20MVP%20(Rapid%20Game)%20II.pdf)
-- 🎮 **Active Scene:** [Assets/Scenes/code.unity](file:///e:/Unity/The-cave-dweller-..Mole-/Assets/Scenes/code.unity)
+- 🎮 **Scene flow:** `Assets/Scenes/Main_Menu.unity` → `First_MAP.unity` → `Winning_Map.unity`

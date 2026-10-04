@@ -162,7 +162,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 20.05084, y: 20.78}
+    oldSize: {x: 1.7435515, y: 1.8069566}
     newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -181,7 +181,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8bb36bd0f5495d40b03425416b541be, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Enemies.AmbushEnemyDarkness
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Enemies.AmbushEnemyDarkness
   maxHealth: 20
   currentHealth: 20
   contactDamage: 20
@@ -190,6 +190,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   groundCheckDistance: 0.15
+  frictionlessMaterial: {fileID: 6200000, guid: 7a2f4c919a32490fb19de748c109df32, type: 2}
   proximityRadius: 2.8
   lungeSpeed: 10
   lungeDuration: 0.35

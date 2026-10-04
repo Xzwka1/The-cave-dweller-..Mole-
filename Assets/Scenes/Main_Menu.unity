@@ -340,7 +340,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 629566260}
-        m_TargetAssemblyTypeName: Main_Menu, Assembly-CSharp
+        m_TargetAssemblyTypeName: CaveDweller.Core.MainMenu, CaveDweller.Runtime
         m_MethodName: ExitGame
         m_Mode: 1
         m_Arguments:
@@ -417,7 +417,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 818930d7e437d9649b9aeb28a4c7c20e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Main_Menu
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Core.MainMenu
 --- !u!4 &629566261
 Transform:
   m_ObjectHideFlags: 0
@@ -850,7 +850,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 629566260}
-        m_TargetAssemblyTypeName: Main_Menu, Assembly-CSharp
+        m_TargetAssemblyTypeName: CaveDweller.Core.MainMenu, CaveDweller.Runtime
         m_MethodName: GoToFirstMap
         m_Mode: 1
         m_Arguments:
@@ -1158,7 +1158,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f9b2d3c4e5a6f7b8c9d0e1f2a3b4c5d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Core.SoundManager
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Core.SoundManager
   bgmSource: {fileID: 0}
   sfxSource: {fileID: 0}
   victoryMusic: {fileID: 8300000, guid: 417f8ec8b30ddc141af3bc2d3bfc49eb, type: 3}

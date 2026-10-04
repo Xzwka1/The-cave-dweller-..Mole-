@@ -8,7 +8,7 @@ using CaveDweller.Combat;
 namespace CaveDweller.Enemies
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    [RequireComponent(typeof(Collider2D))]
+    [RequireComponent(typeof(BoxCollider2D))]
     public abstract class BaseEnemy : MonoBehaviour, IDamageable
     {
         [Header("Health Settings")]
@@ -23,12 +23,17 @@ namespace CaveDweller.Enemies
         [SerializeField] protected LayerMask groundLayer;
         [SerializeField] protected float groundCheckDistance = 0.15f;
 
+        [Header("Friction")]
+        [Tooltip("Shared frictionless material (Project asset). If empty, the collider keeps its current material and a warning is logged once so broken content never hides behind a silent runtime fix.")]
+        [SerializeField] private PhysicsMaterial2D frictionlessMaterial;
+
         protected Rigidbody2D cachedRigidbody;
         protected Collider2D cachedCollider;
         protected SpriteRenderer cachedSpriteRenderer;
         protected Animator cachedAnimator;
         protected Color originalColor;
         protected bool isDying;
+        private Coroutine hitFlashRoutine;
 
         protected int animSpeedHash;
         protected int animAttackTriggerHash;
@@ -87,18 +92,13 @@ namespace CaveDweller.Enemies
 
             if (cachedCollider != null)
             {
-                if (cachedCollider.sharedMaterial == null)
+                if (frictionlessMaterial != null)
                 {
-                    var enemyMat = new PhysicsMaterial2D("EnemyFrictionless")
-                    {
-                        friction = 0f,
-                        bounciness = 0f
-                    };
-                    cachedCollider.sharedMaterial = enemyMat;
+                    cachedCollider.sharedMaterial = frictionlessMaterial;
                 }
-                else
+                else if (cachedCollider.sharedMaterial == null)
                 {
-                    cachedCollider.sharedMaterial.friction = 0f;
+                    Debug.LogWarning("[BaseEnemy] frictionlessMaterial is not assigned and collider has no material. Friction left as-is.", this);
                 }
             }
 
@@ -141,15 +141,23 @@ namespace CaveDweller.Enemies
 
             currentHealth = Mathf.Max(0, currentHealth - amount);
 
-            if (cachedSpriteRenderer != null)
-            {
-                StartCoroutine(FlashOnDamageRoutine());
-            }
+            PlayHitFlash();
 
             if (currentHealth <= 0)
             {
                 Die();
             }
+        }
+
+        /// <summary>
+        /// Hit feedback hook. Subclasses with custom visuals (e.g. stealth alpha)
+        /// override this instead of starting a second, competing flash coroutine.
+        /// </summary>
+        protected virtual void PlayHitFlash()
+        {
+            if (cachedSpriteRenderer == null) return;
+            if (hitFlashRoutine != null) StopCoroutine(hitFlashRoutine);
+            hitFlashRoutine = StartCoroutine(FlashOnDamageRoutine());
         }
 
         public virtual void Die()
@@ -177,6 +185,10 @@ namespace CaveDweller.Enemies
             Destroy(gameObject, destroyDelay);
         }
 
+        /// <summary>
+        /// Single damage path for every enemy attack (melee, lunge, contact):
+        /// attack animation + melee SFX + damage.
+        /// </summary>
         public virtual void DealDamageToPlayer(IDamageable target, int amount)
         {
             if (target == null || target.IsDead) return;
@@ -186,25 +198,18 @@ namespace CaveDweller.Enemies
                 cachedAnimator.SetBool(animIsAttackingHash, true);
                 StartCoroutine(ResetAttackBoolRoutine());
             }
-            CaveDweller.Core.SoundManager.Instance.PlayMonsterMeleeSFX();
+            CaveDweller.Core.SoundManager.Instance?.PlayMonsterMeleeSFX();
             target.TakeDamage(amount);
         }
 
-        public virtual void DealDamageToPlayer(GameObject targetObj, int amount)
+        /// <summary>Finds the IDamageable on an object, its parents, or its children.</summary>
+        protected static IDamageable ResolveDamageable(GameObject obj)
         {
-            if (targetObj == null) return;
-            var d = targetObj.GetComponent<IDamageable>();
-            if (d == null) d = targetObj.GetComponentInParent<IDamageable>();
-            if (d == null) d = targetObj.GetComponentInChildren<IDamageable>();
-            if (d == null || d.IsDead) return;
-            if (cachedAnimator != null)
-            {
-                cachedAnimator.SetTrigger(animAttackTriggerHash);
-                cachedAnimator.SetBool(animIsAttackingHash, true);
-                StartCoroutine(ResetAttackBoolRoutine());
-            }
-            CaveDweller.Core.SoundManager.Instance.PlayMonsterMeleeSFX();
-            d.TakeDamage(amount);
+            if (obj == null) return null;
+            if (obj.TryGetComponent<IDamageable>(out var damageable)) return damageable;
+            damageable = obj.GetComponentInParent<IDamageable>();
+            if (damageable != null) return damageable;
+            return obj.GetComponentInChildren<IDamageable>();
         }
 
         private IEnumerator ResetAttackBoolRoutine()
@@ -216,51 +221,12 @@ namespace CaveDweller.Enemies
             }
         }
 
-        public virtual void DealDamageToPlayer()
-        {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj == null)
-            {
-                return;
-            }
-
-            IDamageable damageable = playerObj.GetComponent<IDamageable>();
-            if (damageable == null)
-            {
-                damageable = playerObj.GetComponentInParent<IDamageable>();
-            }
-
-            if (damageable == null)
-            {
-                damageable = playerObj.GetComponentInChildren<IDamageable>();
-            }
-
-            if (damageable == null)
-            {
-                return;
-            }
-
-            if (damageable.IsDead)
-            {
-                return;
-            }
-
-            damageable.TakeDamage(contactDamage);
-        }
-
         protected virtual void OnCollisionEnter2D(Collision2D collision)
         {
-            if (collision == null || collision.gameObject == null)
-            {
-                return;
-            }
+            if (IsDead || collision == null || collision.gameObject == null) return;
+            if (!collision.gameObject.CompareTag("Player")) return;
 
-            if (!collision.gameObject.CompareTag("Player"))
-            {
-                return;
-            }
-
-            DealDamageToPlayer();
+            DealDamageToPlayer(ResolveDamageable(collision.gameObject), contactDamage);
         }
 
         protected bool CheckGrounded()
@@ -308,6 +274,7 @@ namespace CaveDweller.Enemies
             {
                 cachedSpriteRenderer.color = originalColor;
             }
+            hitFlashRoutine = null;
         }
 
         private void HandleDebugInput()

@@ -1,0 +1,20 @@
+{
+  "name": "CaveDweller.Editor",
+  "rootNamespace": "CaveDweller.EditorTools",
+  "references": [
+    "AnkleBreaker.UnityMCP.Editor",
+    "CaveDweller.Runtime",
+    "Unity.RenderPipelines.Universal.2D.Runtime"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

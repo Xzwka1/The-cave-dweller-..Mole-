@@ -42,6 +42,10 @@ namespace CaveDweller.Combat
         private float originalGravityScale;
         private float originalLightIntensity;
         private bool originalTriggerState;
+        private float nextIlluminateTime;
+
+        // Light-wake checks allocate (OverlapCircleAll); 20 Hz is plenty for a ~3 m light radius.
+        private const float IlluminateInterval = 0.05f;
 
         public float Speed => speed;
         public float Lifetime => lifetime;
@@ -177,9 +181,10 @@ namespace CaveDweller.Combat
                 distance,
                 hitMask);
 
-            // Illuminate any ILightDetectable objects along the flight path
-            if (tracerLight != null && tracerLight.enabled)
+            // Illuminate any ILightDetectable objects along the flight path (throttled)
+            if (tracerLight != null && tracerLight.enabled && Time.time >= nextIlluminateTime)
             {
+                nextIlluminateTime = Time.time + IlluminateInterval;
                 float lightRadius = tracerLight.pointLightOuterRadius > 0f ? tracerLight.pointLightOuterRadius : 2.5f;
                 Collider2D[] illuminated = Physics2D.OverlapCircleAll(transform.position, lightRadius);
                 for (int i = 0; i < illuminated.Length; i++)
@@ -346,6 +351,29 @@ namespace CaveDweller.Combat
             if (IsOwnerCollider(col)) return true;
             // Never hit another projectile (allows shotgun pellets to fly freely together)
             if (col.GetComponent<Projectile>() != null || col.GetComponentInParent<Projectile>() != null) return true;
+
+            // Never hit camera bounds / camera zones
+            if (CaveDweller.Core.CameraZone.IsCameraVolume(col)) return true;
+
+            // Never hit trigger colliders unless they are explicitly damageable hurtboxes (e.g. enemy hurtboxes)
+            if (col.isTrigger)
+            {
+                IDamageable damageable = col.GetComponent<IDamageable>();
+                if (damageable == null && col.attachedRigidbody != null)
+                {
+                    damageable = col.attachedRigidbody.GetComponent<IDamageable>();
+                }
+                if (damageable == null)
+                {
+                    damageable = col.GetComponentInParent<IDamageable>();
+                }
+
+                if (damageable == null)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 

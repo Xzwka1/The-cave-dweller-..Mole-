@@ -52,13 +52,15 @@ namespace CaveDweller.Lighting
 
         private void OnValidate()
         {
-            flashRadiusMin = Mathf.Clamp(flashRadiusMin, 1f, 5f);
-            flashRadiusMax = Mathf.Clamp(flashRadiusMax, 1f, 5f);
+            flashRadiusMin = Mathf.Clamp(flashRadiusMin, 0.5f, 12f);
+            flashRadiusMax = Mathf.Clamp(flashRadiusMax, 0.5f, 12f);
             if (flashRadiusMax < flashRadiusMin)
             {
                 flashRadiusMax = flashRadiusMin;
             }
-            fadeDuration = Mathf.Clamp(fadeDuration, 0.04f, 0.2f);
+            // Must stay within the same range as FadeOut() uses, otherwise the
+            // fade re-clamp silently changes the authored duration.
+            fadeDuration = Mathf.Clamp(fadeDuration, 0.1f, 0.2f);
             flashIntensity = Mathf.Max(0f, flashIntensity);
             occlusionBoxSize = Mathf.Max(0.01f, occlusionBoxSize);
         }
@@ -121,8 +123,10 @@ namespace CaveDweller.Lighting
                 baseOuterRadius = muzzleLight.pointLightOuterRadius;
             }
 
-            float radius = Random.Range(flashRadiusMin, flashRadiusMax);
-            radius = Mathf.Clamp(radius, 8f, 12f);
+            // NOTE: radius must respect flashRadiusMin/Max as authored in the Inspector.
+            // A previous Mathf.Clamp(radius, 8f, 12f) here silently overrode the 1-5 range,
+            // making the serialized fields dead. Only guarantee Max >= Min.
+            float radius = Random.Range(flashRadiusMin, Mathf.Max(flashRadiusMin, flashRadiusMax));
 
             if (fadeRoutine != null)
             {

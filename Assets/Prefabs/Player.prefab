@@ -137,7 +137,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 17.260723, y: 25.5}
+    oldSize: {x: 1.327748, y: 1.9615386}
     newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -183,7 +183,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7988ff6dd781238419d27825f95de159, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerMovement
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Player.PlayerMovement
   moveSpeed: 8.5
   jumpForce: 8.5
   fallGravityMultiplier: 1.6
@@ -198,6 +198,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   groundCheckDistance: 0.15
+  frictionlessMaterial: {fileID: 6200000, guid: 7a2f4c919a32490fb19de748c109df32, type: 2}
   animator: {fileID: 0}
   dashTriggerName: Dash
   dashBackTriggerName: DashBack
@@ -216,7 +217,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ecd12531658fa041a4b4875fb5ea056, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerHealth
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Player.PlayerHealth
   maxHealth: 100
   invulnerabilityDuration: 0.5
   spriteRenderer: {fileID: 7100000000000003}
@@ -393,7 +394,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f90a132129ca13840a03cf14b6994d60, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerWeapon
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Player.PlayerWeapon
   maxAmmo: 2
   reloadTime: 1.2
   pelletsCount: 7
@@ -559,11 +560,11 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e84dcc19a30f3147aa744161b660b40, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Lighting.DynamicMuzzleLight
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Lighting.DynamicMuzzleLight
   flashIntensity: 2
   flashRadiusMin: 2
   flashRadiusMax: 3.5
-  fadeDuration: 0.08
+  fadeDuration: 0.1
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128

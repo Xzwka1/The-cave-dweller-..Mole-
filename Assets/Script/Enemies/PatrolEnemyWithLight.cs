@@ -49,9 +49,6 @@ namespace CaveDweller.Enemies
         private float facingDirection = 1f;
         private float lastAttackTime = -999f;
         private bool playerVisible;
-        private Color originalSpriteColor = Color.white;
-        private bool hasOriginalColor;
-        private Coroutine hitFlashRoutine;
         private bool debugLightForcedOff;
 
         public Transform PatrolPointA => patrolPointA;
@@ -74,12 +71,6 @@ namespace CaveDweller.Enemies
         {
             maxHealth = 140;
             base.Awake();
-
-            if (spriteRenderer != null)
-            {
-                originalSpriteColor = spriteRenderer.color;
-                hasOriginalColor = true;
-            }
 
             if (spotLight == null)
             {
@@ -258,14 +249,8 @@ namespace CaveDweller.Enemies
             if (!IsPlayerInAttackRange()) return;
 
             lastAttackTime = Time.time;
-            if (playerDamageable != null)
-            {
-                DealDamageToPlayer(playerDamageable, attackDamage);
-            }
-            else if (playerTransform != null)
-            {
-                DealDamageToPlayer(playerTransform.gameObject, attackDamage);
-            }
+            IDamageable target = playerDamageable ?? (playerTransform != null ? ResolveDamageable(playerTransform.gameObject) : null);
+            DealDamageToPlayer(target, attackDamage);
         }
 
         private bool IsPlayerInAttackRange()
@@ -412,15 +397,7 @@ namespace CaveDweller.Enemies
             if (playerObj == null) return;
 
             playerTransform = playerObj.transform;
-            playerDamageable = playerObj.GetComponent<IDamageable>();
-            if (playerDamageable == null)
-            {
-                playerDamageable = playerObj.GetComponentInParent<IDamageable>();
-            }
-            if (playerDamageable == null)
-            {
-                playerDamageable = playerObj.GetComponentInChildren<IDamageable>();
-            }
+            playerDamageable = ResolveDamageable(playerObj);
         }
 
         public override void TakeDamage(int amount)
@@ -429,35 +406,12 @@ namespace CaveDweller.Enemies
             base.TakeDamage(amount);
             if (IsDead) return;
 
+            // Getting shot always pulls the patrol into a chase (hit flash comes from BaseEnemy).
             ResolvePlayer();
             if (playerTransform != null)
             {
                 currentState = EnemyState.Chase;
             }
-
-            if (spriteRenderer != null)
-            {
-                if (hitFlashRoutine != null)
-                {
-                    StopCoroutine(hitFlashRoutine);
-                }
-                hitFlashRoutine = StartCoroutine(HitFlashRoutine());
-            }
-        }
-
-        private IEnumerator HitFlashRoutine()
-        {
-            Color restoreColor = hasOriginalColor ? originalSpriteColor : Color.white;
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.color = Color.red;
-            }
-            yield return new WaitForSeconds(0.1f);
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.color = restoreColor;
-            }
-            hitFlashRoutine = null;
         }
 
         private void HandleDebugInput()

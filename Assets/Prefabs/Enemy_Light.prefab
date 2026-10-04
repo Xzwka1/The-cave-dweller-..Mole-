@@ -263,7 +263,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 20.05084, y: 20.78}
+    oldSize: {x: 1.7435515, y: 1.8069566}
     newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -282,7 +282,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89fe35a7d90f7f34092584d89a5f77b9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Enemies.PatrolEnemyWithLight
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Enemies.PatrolEnemyWithLight
   maxHealth: 140
   currentHealth: 140
   contactDamage: 20
@@ -291,6 +291,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   groundCheckDistance: 0.15
+  frictionlessMaterial: {fileID: 6200000, guid: 7a2f4c919a32490fb19de748c109df32, type: 2}
   patrolPointA: {fileID: 0}
   patrolPointB: {fileID: 0}
   patrolSpeed: 2

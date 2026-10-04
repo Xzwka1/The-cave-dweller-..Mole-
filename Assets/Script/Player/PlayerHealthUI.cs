@@ -112,7 +112,7 @@ namespace CaveDweller.Player
         {
             if (playerHealth != null) return;
 
-            playerHealth = FindFirstObjectByType<PlayerHealth>();
+            playerHealth = FindAnyObjectByType<PlayerHealth>();
             if (playerHealth == null)
             {
                 var playerObj = GameObject.FindGameObjectWithTag("Player");

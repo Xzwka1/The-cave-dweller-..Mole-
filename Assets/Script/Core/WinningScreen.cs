@@ -14,7 +14,7 @@ namespace CaveDweller.Core
 
         private void Start()
         {
-            SoundManager.Instance.PlayVictoryMusic();
+            SoundManager.Instance?.PlayVictoryMusic();
         }
 
         private void Update()
@@ -46,14 +46,14 @@ namespace CaveDweller.Core
 
         public void BackToMainMenu()
         {
-            SoundManager.Instance.PlayButtonClickSFX();
+            SoundManager.Instance?.PlayButtonClickSFX();
             Debug.Log("[WinningScreen] Returning to Main Menu...");
             SceneManager.LoadScene(mainMenuSceneName);
         }
 
         public void PlayAgain()
         {
-            SoundManager.Instance.PlayButtonClickSFX();
+            SoundManager.Instance?.PlayButtonClickSFX();
             Debug.Log("[WinningScreen] Starting game again from First_MAP...");
             SceneManager.LoadScene(firstMapSceneName);
         }

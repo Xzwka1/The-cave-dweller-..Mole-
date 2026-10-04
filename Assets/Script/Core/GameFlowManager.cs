@@ -148,16 +148,9 @@ namespace CaveDweller.Core
             if (other == null) return;
             if (currentState != GameState.Playing) return;
 
+            // GameFlowManager rides on the player-facing trigger; the exit door is identified by tag.
+            // (A second branch that required this manager's own GameObject to be tagged ExitDoor was dead code.)
             if (!string.IsNullOrEmpty(exitDoorTag) && other.CompareTag(exitDoorTag))
-            {
-                OnPlayerReachedExit();
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(playerTag)
-                && !string.IsNullOrEmpty(exitDoorTag)
-                && other.CompareTag(playerTag)
-                && CompareTag(exitDoorTag))
             {
                 OnPlayerReachedExit();
             }
@@ -232,7 +225,7 @@ namespace CaveDweller.Core
             SetPanelActive(gameOverPanel, true);
 
             // Play death SFX via SoundManager if available
-            SoundManager.Instance.PlayPlayerDeathSFX();
+            SoundManager.Instance?.PlayPlayerDeathSFX();
 
             // Auto-detect countdownText if not assigned
             if (countdownText == null && gameOverPanel != null)

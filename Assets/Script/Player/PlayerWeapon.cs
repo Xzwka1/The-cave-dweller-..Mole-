@@ -36,7 +36,8 @@ namespace CaveDweller.Player
         private bool isReloading;
         private Coroutine reloadCoroutine;
         private Coroutine flashCoroutine;
-        private Camera mainCamera;
+        private Coroutine shootingStateRoutine;
+        private Camera _cachedCamera;
         private Animator playerAnimator;
         private int animShootTriggerHash;
         private int animIsShootingHash;
@@ -45,6 +46,16 @@ namespace CaveDweller.Player
         private int animIsDashingBackShootHash;
         private int animIsDashingJumpShootHash;
         private int animIsDashingBackJumpShootHash;
+
+        private Camera MainCamera
+        {
+            get
+            {
+                if (_cachedCamera != null) return _cachedCamera;
+                _cachedCamera = Camera.main != null ? Camera.main : FindAnyObjectByType<Camera>();
+                return _cachedCamera;
+            }
+        }
 
         public int MaxAmmo => maxAmmo;
         public int CurrentAmmo => currentAmmo;
@@ -87,38 +98,26 @@ namespace CaveDweller.Player
             animShootTriggerHash = Animator.StringToHash("Shoot");
             animIsShootingHash = Animator.StringToHash("IsShooting");
             animIsJumpShootingHash = Animator.StringToHash("IsJumpShooting");
-            animIsDashingShootHash = Animator.StringToHash("IsDashingShoot(พุ่งยิง)");
-            animIsDashingBackShootHash = Animator.StringToHash("IsDashing(ถอยหลังยิง)");
-            animIsDashingJumpShootHash = Animator.StringToHash("IsDashing(กระโดดยิง)");
-            animIsDashingBackJumpShootHash = Animator.StringToHash("IsDashingShoot(พุ่งถอยหลังยิง)");
+            animIsDashingShootHash = Animator.StringToHash("IsDashingShoot");
+            animIsDashingBackShootHash = Animator.StringToHash("IsDashingBackShoot");
+            animIsDashingJumpShootHash = Animator.StringToHash("IsDashingJumpShoot");
+            animIsDashingBackJumpShootHash = Animator.StringToHash("IsDashingBackJumpShoot");
 
-            mainCamera = Camera.main;
+            _cachedCamera = Camera.main;
         }
 
         private void Start()
         {
-            if (mainCamera == null)
+            // Camera may not have spawned yet at Awake; the MainCamera getter re-resolves on demand.
+            if (MainCamera == null)
             {
-                mainCamera = Camera.main;
-            }
-
-            if (mainCamera == null)
-            {
-                Camera camObj = FindFirstObjectByType<Camera>();
-                if (camObj != null)
-                {
-                    mainCamera = camObj;
-                }
+                Debug.LogWarning("[PlayerWeapon] No Camera found. Aim and spread will fall back to world-right until one appears.", this);
             }
         }
 
         private void Update()
         {
-            if (mainCamera == null)
-            {
-                mainCamera = Camera.main;
-                if (mainCamera == null) return;
-            }
+            if (MainCamera == null) return;
 
             HandleAim();
             HandleInput();
@@ -126,10 +125,10 @@ namespace CaveDweller.Player
 
         private Vector3 GetMouseWorldPosition()
         {
-            if (mainCamera == null)
+            Camera cam = MainCamera;
+            if (cam == null)
             {
-                mainCamera = Camera.main;
-                if (mainCamera == null) return transform.position + Vector3.right;
+                return transform.position + Vector3.right;
             }
 
             Vector2 mouseScreenPos = Vector2.zero;
@@ -142,8 +141,8 @@ namespace CaveDweller.Player
 #else
             mouseScreenPos = Input.mousePosition;
 #endif
-            float camDist = Mathf.Abs(mainCamera.transform.position.z);
-            Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, camDist));
+            float camDist = Mathf.Abs(cam.transform.position.z);
+            Vector3 worldPos = cam.ScreenToWorldPoint(new Vector3(mouseScreenPos.x, mouseScreenPos.y, camDist));
             worldPos.z = 0f;
             return worldPos;
         }
@@ -231,23 +230,31 @@ namespace CaveDweller.Player
             }
 
             // Screen shake feedback
-            if (mainCamera != null)
+            Camera camShake = MainCamera;
+            if (camShake != null)
             {
-                var camCtrl = mainCamera.GetComponent<CaveDweller.Core.CameraController>();
+                var camCtrl = camShake.GetComponent<CaveDweller.Core.CameraController>();
                 if (camCtrl != null)
                 {
                     camCtrl.Shake(0.08f, screenShakeMagnitude);
                 }
             }
 
-            // Audio feedback
-            CaveDweller.Core.SoundManager.Instance.PlayGunshotSFX();
+            // Audio feedback — silent when the SoundManager hasn't spawned yet
+            if (CaveDweller.Core.SoundManager.TryGetInstance(out var sfxMgr))
+            {
+                sfxMgr.PlayGunshotSFX();
+            }
 
             // Character shoot recoil animation feedback
             if (playerAnimator != null)
             {
                 playerAnimator.SetTrigger(animShootTriggerHash);
-                StartCoroutine(SetShootingStateRoutine());
+                if (shootingStateRoutine != null)
+                {
+                    StopCoroutine(shootingStateRoutine);
+                }
+                shootingStateRoutine = StartCoroutine(SetShootingStateRoutine());
             }
 
             if (muzzleFlashLight != null)
@@ -313,27 +320,31 @@ namespace CaveDweller.Player
                 }
                 else
                 {
-                    RaycastHit2D hit = Physics2D.Raycast(origin, dir, effectiveRange, hitMask);
-                    Vector2 endPoint;
+                    RaycastHit2D[] hits = Physics2D.RaycastAll(origin, dir, effectiveRange, hitMask);
+                    Vector2 endPoint = origin + dir * bulletRange;
 
-                    if (hit.collider != null && hit.collider.transform.root != transform.root && !hit.collider.CompareTag("Player"))
+                    for (int h = 0; h < hits.Length; h++)
                     {
-                        endPoint = hit.point;
+                        RaycastHit2D hit = hits[h];
+                        if (hit.collider == null) continue;
+                        if (hit.collider.transform.root == transform.root || hit.collider.CompareTag("Player")) continue;
+                        if (CaveDweller.Core.CameraZone.IsCameraVolume(hit.collider)) continue;
 
-                        IDamageable damageable = hit.collider.GetComponent<IDamageable>();
-                        if (damageable == null)
+                        IDamageable damageable = hit.collider.GetComponent<IDamageable>() ?? hit.collider.GetComponentInParent<IDamageable>();
+                        if (damageable == null && hit.collider.attachedRigidbody != null)
                         {
-                            damageable = hit.collider.GetComponentInParent<IDamageable>();
+                            damageable = hit.collider.attachedRigidbody.GetComponent<IDamageable>();
                         }
 
+                        // Ignore triggers without IDamageable (camera bounds, checkpoints, etc.)
+                        if (hit.collider.isTrigger && damageable == null) continue;
+
+                        endPoint = hit.point;
                         if (damageable != null)
                         {
                             damageable.TakeDamage(damagePerPellet);
                         }
-                    }
-                    else
-                    {
-                        endPoint = origin + dir * bulletRange;
+                        break;
                     }
 
                     if (bulletTracerPrefab != null)
@@ -424,45 +435,54 @@ namespace CaveDweller.Player
         {
             if (playerAnimator != null)
             {
-                playerAnimator.SetBool(animIsShootingHash, true);
+                ResetShootingBools();
+
                 var pm = transform.root.GetComponent<PlayerMovement>();
-                if (pm != null)
+                if (pm != null && !pm.IsGrounded)
                 {
-                    if (!pm.IsGrounded)
-                    {
-                        if (pm.IsDashing)
-                        {
-                            if (pm.IsDashingBackward)
-                                playerAnimator.SetBool(animIsDashingBackJumpShootHash, true);
-                            else
-                                playerAnimator.SetBool(animIsDashingJumpShootHash, true);
-                        }
-                        else
-                        {
-                            playerAnimator.SetBool(animIsJumpShootingHash, true);
-                        }
-                    }
-                    else if (pm.IsDashing)
+                    // IN AIR
+                    if (pm.IsDashing)
                     {
                         if (pm.IsDashingBackward)
-                            playerAnimator.SetBool(animIsDashingBackShootHash, true);
+                            playerAnimator.SetBool(animIsDashingBackJumpShootHash, true);
                         else
-                            playerAnimator.SetBool(animIsDashingShootHash, true);
+                            playerAnimator.SetBool(animIsDashingJumpShootHash, true);
                     }
+                    else
+                    {
+                        playerAnimator.SetBool(animIsJumpShootingHash, true);
+                    }
+                }
+                else if (pm != null && pm.IsDashing)
+                {
+                    // DASHING ON GROUND
+                    if (pm.IsDashingBackward)
+                        playerAnimator.SetBool(animIsDashingBackShootHash, true);
+                    else
+                        playerAnimator.SetBool(animIsDashingShootHash, true);
+                }
+                else
+                {
+                    // GROUND STANDING / WALKING
+                    playerAnimator.SetBool(animIsShootingHash, true);
                 }
             }
 
-            yield return new WaitForSeconds(0.18f);
+            yield return new WaitForSeconds(0.22f);
 
-            if (playerAnimator != null)
-            {
-                playerAnimator.SetBool(animIsShootingHash, false);
-                playerAnimator.SetBool(animIsJumpShootingHash, false);
-                playerAnimator.SetBool(animIsDashingShootHash, false);
-                playerAnimator.SetBool(animIsDashingBackShootHash, false);
-                playerAnimator.SetBool(animIsDashingJumpShootHash, false);
-                playerAnimator.SetBool(animIsDashingBackJumpShootHash, false);
-            }
+            ResetShootingBools();
+            shootingStateRoutine = null;
+        }
+
+        private void ResetShootingBools()
+        {
+            if (playerAnimator == null) return;
+            playerAnimator.SetBool(animIsShootingHash, false);
+            playerAnimator.SetBool(animIsJumpShootingHash, false);
+            playerAnimator.SetBool(animIsDashingShootHash, false);
+            playerAnimator.SetBool(animIsDashingBackShootHash, false);
+            playerAnimator.SetBool(animIsDashingJumpShootHash, false);
+            playerAnimator.SetBool(animIsDashingBackJumpShootHash, false);
         }
 
         private IEnumerator MuzzleFlashCoroutine()

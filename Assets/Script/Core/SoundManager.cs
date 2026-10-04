@@ -5,13 +5,17 @@ using UnityEngine.SceneManagement;
 namespace CaveDweller.Core
 {
     /// <summary>
-    /// SoundManager Singleton (DontDestroyOnLoad).
-    /// Handles BGM cross-fading, victory music, and all game SFX.
-    /// Provides high-quality procedural audio synthesis fallback if audio assets from PDM are not yet loaded.
+    /// SoundManager Singleton — must exist in Main_Menu and be DontDestroyOnLoad.
+    /// IMPORTANT: Do NOT call Instance before every Awakened scene has had the
+    /// chance to place its SoundManager prefab; otherwise audio silently drops.
+    /// No lazy GetComponent-ghost: if there is no backing AudioSource/Clip the
+    /// call must LogWarning (not hide) so that broken content never stays muted.
     /// </summary>
+    [DefaultExecutionOrder(-100)]
     public class SoundManager : MonoBehaviour
     {
         private static SoundManager instance;
+        private static bool noInstanceWarnedOnce;
 
         public static SoundManager Instance
         {
@@ -19,15 +23,23 @@ namespace CaveDweller.Core
             {
                 if (instance == null)
                 {
-                    instance = FindFirstObjectByType<SoundManager>();
-                    if (instance == null)
+                    instance = FindAnyObjectByType<SoundManager>();
+                    if (instance == null && !noInstanceWarnedOnce)
                     {
-                        var go = new GameObject("SoundManager");
-                        instance = go.AddComponent<SoundManager>();
+                        noInstanceWarnedOnce = true;
+                        Debug.LogWarning("[SoundManager] No SoundManager in active scene. "
+                            + "SFX calls will be silenced. Place a SoundManager prefab in Main_Menu "
+                            + "(DontDestroyOnLoad) so that it reaches First_MAP.");
                     }
                 }
                 return instance;
             }
+        }
+
+        public static bool TryGetInstance(out SoundManager result)
+        {
+            result = instance != null ? instance : FindAnyObjectByType<SoundManager>();
+            return result != null;
         }
 
         [Header("Audio Sources")]
@@ -200,6 +212,11 @@ namespace CaveDweller.Core
         {
             if (clip == null) return;
             if (sfxSource == null) InitializeAudioSources();
+            if (sfxSource == null)
+            {
+                Debug.LogWarning("[SoundManager] sfxSource is null — cannot play SFX.");
+                return;
+            }
 
             sfxSource.PlayOneShot(clip, sfxVolume * Mathf.Clamp01(volumeMultiplier));
         }

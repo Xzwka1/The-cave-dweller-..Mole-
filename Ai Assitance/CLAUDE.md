@@ -59,7 +59,7 @@
 Player Systems                    Lighting & Vision                  Enemy Systems
 PlayerMovement ──► Rigidbody2D    Global Light 2D (Intensity ~0.05)  BaseEnemy : IDamageable
 PlayerWeapon ──► Shotgun +        Player Ambient Light (r=1.5m)      ├─► PatrolEnemyWithLight (Spot Light 2D + Raycast2D)
-  Muzzle Flash (Light2D)          Muzzle Flash (r=8–12m, 0.1–0.2s)   └─► AmbushEnemyDarkness : ILightDetectable
+  Muzzle Flash (Light2D)          Muzzle Flash (r=2–3.5m, 0.1–0.2s)  └─► AmbushEnemyDarkness : ILightDetectable
 PlayerHealth (100 HP)             Bullet Tracer (Point Light2D)
 
 Camera & Level: CameraController (follow + zoom) → Player | GameFlowManager (ExitDoor = win, HP 0 = lose)
@@ -67,13 +67,23 @@ Camera & Level: CameraController (follow + zoom) → Player | GameFlowManager (E
 
 ### Namespace ↔ Folder Map
 
+Assembly: runtime code → `CaveDweller.Runtime` (`Assets/Script/CaveDweller.Runtime.asmdef`), editor tools → `CaveDweller.Editor` (`Assets/Editor/CaveDweller.Editor.asmdef`)
+
 | Namespace | Folder | ไฟล์ |
 | :--- | :--- | :--- |
-| `CaveDweller.Player` | `Assets/Script/Player/` | `PlayerMovement.cs` ✅, `PlayerWeapon.cs` ⏳, `PlayerHealth.cs` ⬜ |
-| `CaveDweller.Core` | `Assets/Script/Core/` | `CameraController.cs` ✅, `GameFlowManager.cs` ⬜ |
-| `CaveDweller.Combat` | `Assets/Script/Combat/` | `IDamageable.cs` ✅, `Projectile.cs` ⬜ |
-| `CaveDweller.Lighting` | `Assets/Script/Lighting/` | `ILightDetectable.cs` ✅, `DynamicMuzzleLight.cs` ⬜ |
-| `CaveDweller.Enemies` | `Assets/Script/Enemies/` | `BaseEnemy.cs` ⬜, `PatrolEnemyWithLight.cs` ⬜, `AmbushEnemyDarkness.cs` ⬜ |
+| `CaveDweller.Player` | `Assets/Script/Player/` | `PlayerMovement.cs`, `PlayerWeapon.cs`, `PlayerHealth.cs`, `PlayerHealthUI.cs` ✅ |
+| `CaveDweller.Core` | `Assets/Script/Core/` | `CameraController.cs`, `CameraZone.cs`, `GameFlowManager.cs`, `SoundManager.cs`, `WinningScreen.cs`, `MainMenu.cs` ✅ |
+| `CaveDweller.Level` | `Assets/Script/Level/` | `MapTeleporter.cs` ✅ |
+| `CaveDweller.Combat` | `Assets/Script/Combat/` | `IDamageable.cs`, `Projectile.cs` ✅ |
+| `CaveDweller.Lighting` | `Assets/Script/Lighting/` | `ILightDetectable.cs`, `DynamicMuzzleLight.cs` ✅ |
+| `CaveDweller.Enemies` | `Assets/Script/Enemies/` | `BaseEnemy.cs`, `PatrolEnemyWithLight.cs`, `AmbushEnemyDarkness.cs` ✅ |
+| `CaveDweller.EditorTools` | `Assets/Editor/` | `AnimationIntegrator.cs`, `CameraConfinerEditor.cs` ✅ |
+
+**กฎเพิ่มเติม (จาก refactor 2026-10-04):**
+- ชื่อ Animator parameter / state / C# identifier ต้องเป็น ASCII เท่านั้น (เช่น `IsDashingBack` ไม่ใช่ `IsDashing(ถอยหลัง)`)
+- ห้าม `new PhysicsMaterial2D` / `new GameObject` ใน `Awake()` หรือ singleton getter — ใช้ asset ที่ผูกผ่าน `[SerializeField]` (เช่น `Assets/Settings/Physics/Frictionless.physicsMaterial2D`)
+- เรียก `SoundManager.Instance?.PlayXxx()` เสมอ (SoundManager อยู่ใน `Main_Menu` แบบ DontDestroyOnLoad)
+- Enemy โจมตีผ่าน `BaseEnemy.DealDamageToPlayer(IDamageable, int)` ทางเดียว
 
 ### Contracts ที่มีแล้ว (ห้ามเขียนใหม่ — implement ต่อ)
 
@@ -82,11 +92,14 @@ Camera & Level: CameraController (follow + zoom) → Player | GameFlowManager (E
 
 ### ค่าสเปกสำคัญ (อ้างอิงด่วน — ตัวเต็มดู `game-architect.md` §4)
 
-- Movement: `moveSpeed 7` / `jumpForce 12` / `dash 16 / 0.2s / cooldown 1.0s` (Left Shift)
-- Shotgun: 2 นัด / 6 pellets / `spread 18°` / `range 12m` / `20 dmg` ต่อ pellet / reload `1.2s` (R หรือหมดแม็ก)
+> ตัวเลขด้านล่าง sync กับโค้ด/Inspector จริง ณ 2026-10-04 (ทีมจูนจากสเปกเดิมแล้ว — ยึดชุดนี้เป็นหลัก)
+
+- Movement: `moveSpeed 8.5` / `jumpForce 8.5` / `dash 22 / 0.22s / cooldown 1.0s` (Left Shift) / `fallGravityMultiplier 1.6`
+- Shotgun: 2 นัด / 7 pellets / `spread 36°` / `range 22m` / `18 dmg` ต่อ pellet (รวม 126/นัด) / reload `1.2s` (R หรือหมดแม็ก)
 - Health: 100 HP / โดนตีครั้งละ 20 / I-frames 0.5s / ไม่มีการฮีล
-- Enemies: Patrol (โดน 2 นัดตาย, states Patrol/Chase/Attack) / Ambush (นิ่ง, ตื่นเมื่อใกล้ 2.5m หรือโดนแสง, โดน 1 นัดตาย)
-- Camera: ortho size 4–9 (scroll zoom), smooth follow
+- Enemies: Patrol HP 140 (โดน 2 นัดตาย, states Patrol/Chase/Attack, chase 4.2) / Ambush HP 20 (นิ่ง, ตื่นเมื่อใกล้ 2.8m หรือโดนแสง, โดน 1 นัดตาย)
+- Camera: ortho size 5–11.5 (scroll zoom), smooth follow + confine bounds (`CameraBounds` / `CameraZone`)
+- Muzzle flash: `radius 2–3.5m` / `intensity 2.0` / fade `0.1–0.2s` (สเปกเดิมเขียน 8–12m — ดูหมายเหตุใน `game-architect.md` §4.3)
 
 ---
 
@@ -128,7 +141,7 @@ Camera & Level: CameraController (follow + zoom) → Player | GameFlowManager (E
 | สเปกตัวเลขเต็ม / module spec / folder structure / MVP Roadmap (เสร็จวันนี้) | `Ai Assitance/game-architect.md` |
 | สถานะ Task ปัจจุบัน (DONE / IN PROGRESS / TODO) | `Ai Assitance/TODO.md` |
 | Game Design ต้นฉบับ (MVP rapid game) | `Ai Assitance/GDD Overview for MVP (Rapid Game) II.pdf` |
-| Scene จริง (Level 1 MVP) | `Assets/Scenes/code.unity` |
+| Scene จริง (flow ที่ build) | `Assets/Scenes/Main_Menu.unity` → `First_MAP.unity` → `Winning_Map.unity` (`code.unity` = prototype เก่า) |
 | วิธีทำงานของฉัน (ไฟล์นี้) | `CLAUDE.md` (หรือสำเนาใน `Ai Assitance/CLAUDE.md`) |
 
 **กฎกันขัด:** ถ้าสเปกขัดกัน ให้ยึด `Ai Assitance/game-architect.md` เป็นหลัก และถาม User ก่อนแก้ (no guessing) — ไฟล์นี้เก็บเฉพาะ *วิธีทำงานของ Claude* ไม่เก็บตัวเลขสเปกซ้ำ

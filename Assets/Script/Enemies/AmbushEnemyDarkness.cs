@@ -280,16 +280,13 @@ namespace CaveDweller.Enemies
             else if (xDir < -0.05f) spriteRenderer.flipX = true;
         }
 
-        public override void TakeDamage(int amount)
+        protected override void PlayHitFlash()
         {
-            if (IsDead) return;
-            base.TakeDamage(amount);
-            if (IsDead) return;
-            if (spriteRenderer != null)
-            {
-                if (hitFlashRoutine != null) StopCoroutine(hitFlashRoutine);
-                hitFlashRoutine = StartCoroutine(DamageFlashRoutine());
-            }
+            // The base flash restores the pre-stealth colour (full alpha) and would reveal a
+            // dormant ambusher, so use the alpha-aware routine. No flash on the killing blow.
+            if (IsDead || spriteRenderer == null) return;
+            if (hitFlashRoutine != null) StopCoroutine(hitFlashRoutine);
+            hitFlashRoutine = StartCoroutine(DamageFlashRoutine());
         }
 
         private IEnumerator DamageFlashRoutine()
@@ -318,22 +315,12 @@ namespace CaveDweller.Enemies
             base.Die();
         }
 
-        protected override void OnCollisionEnter2D(Collision2D collision)
-        {
-            if (IsDead) return;
-            if (collision == null || collision.gameObject == null) return;
-            var d = collision.gameObject.GetComponent<IDamageable>();
-            if (d == null) d = collision.gameObject.GetComponentInParent<IDamageable>();
-            if (d != null) DealDamageToPlayer(d, ContactDamage);
-        }
-
+        // Body contact is handled by BaseEnemy.OnCollisionEnter2D (Player tag only).
+        // Previously any IDamageable was hit here, so an ambusher could damage other enemies.
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (IsDead) return;
-            if (other == null) return;
-            var d = other.GetComponent<IDamageable>();
-            if (d == null) d = other.GetComponentInParent<IDamageable>();
-            if (d != null) DealDamageToPlayer(d, ContactDamage);
+            if (IsDead || other == null || !other.CompareTag("Player")) return;
+            DealDamageToPlayer(ResolveDamageable(other.gameObject), ContactDamage);
         }
 
 #if UNITY_EDITOR

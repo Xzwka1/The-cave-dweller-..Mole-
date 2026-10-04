@@ -10,10 +10,11 @@ namespace CaveDweller.EditorTools
     [InitializeOnLoad]
     public static class AnimationIntegrator
     {
-        [InitializeOnLoadMethod]
-        public static void RunIntegration()
+        [MenuItem("Tools/Restart MCP Server")]
+        public static void RestartMCPServer()
         {
-            EditorApplication.delayCall += Execute;
+            UnityMCP.Editor.MCPBridgeServer.Stop();
+            UnityMCP.Editor.MCPBridgeServer.Start();
         }
 
         [MenuItem("Tools/Integrate Animations")]
@@ -53,12 +54,12 @@ namespace CaveDweller.EditorTools
             EnsureParam("IsShooting", AnimatorControllerParameterType.Bool);
             EnsureParam("IsDashing", AnimatorControllerParameterType.Bool);
             EnsureParam("IsJumping", AnimatorControllerParameterType.Bool);
-            EnsureParam("IsDashing(ถอยหลัง)", AnimatorControllerParameterType.Bool);
+            EnsureParam("IsDashingBack", AnimatorControllerParameterType.Bool);
             EnsureParam("IsJumpShooting", AnimatorControllerParameterType.Bool);
-            EnsureParam("IsDashing(ถอยหลังยิง)", AnimatorControllerParameterType.Bool);
-            EnsureParam("IsDashing(กระโดดยิง)", AnimatorControllerParameterType.Bool);
-            EnsureParam("IsDashingShoot(พุ่งยิง)", AnimatorControllerParameterType.Bool);
-            EnsureParam("IsDashingShoot(พุ่งถอยหลังยิง)", AnimatorControllerParameterType.Bool);
+            EnsureParam("IsDashingBackShoot", AnimatorControllerParameterType.Bool);
+            EnsureParam("IsDashingJumpShoot", AnimatorControllerParameterType.Bool);
+            EnsureParam("IsDashingShoot", AnimatorControllerParameterType.Bool);
+            EnsureParam("IsDashingBackJumpShoot", AnimatorControllerParameterType.Bool);
 
             // Backward-compatible parameters
             EnsureParam("Speed", AnimatorControllerParameterType.Float);
@@ -73,7 +74,8 @@ namespace CaveDweller.EditorTools
             // Load all 11 character clips
             string dir = "Assets/Animation/Main_Character/";
             var clipIdle = AssetDatabase.LoadAssetAtPath<AnimationClip>(dir + "idle.anim");
-            var clipWalk = AssetDatabase.LoadAssetAtPath<AnimationClip>(dir + "Walk.anim");
+            var clipWalk = AssetDatabase.LoadAssetAtPath<AnimationClip>(dir + "Wolk.anim") 
+                           ?? AssetDatabase.LoadAssetAtPath<AnimationClip>(dir + "Walk.anim");
             var clipJump = AssetDatabase.LoadAssetAtPath<AnimationClip>(dir + "Jump.anim");
             var clipShoot = AssetDatabase.LoadAssetAtPath<AnimationClip>(dir + "Shoot.anim");
             var clipDash = AssetDatabase.LoadAssetAtPath<AnimationClip>(dir + "Dash.anim");
@@ -105,28 +107,28 @@ namespace CaveDweller.EditorTools
             var stJump = GetOrCreateState("Jump", clipJump, new Vector3(520, -200, 0));
             var stShoot = GetOrCreateState("Shoot", clipShoot, new Vector3(1110, 10, 0));
             var stDash = GetOrCreateState("Dash", clipDash, new Vector3(230, -440, 0));
-            var stDashBack = GetOrCreateState("Dash(ถอยหลัง)", clipDashBack, new Vector3(-180, -670, 0));
+            var stDashBack = GetOrCreateState("DashBack", clipDashBack, new Vector3(-180, -670, 0));
             var stJumpShoot = GetOrCreateState("JumpShoot", clipJumpShoot, new Vector3(1060, -410, 0));
-            var stDashShoot = GetOrCreateState("Dash(พุ่งยิง)", clipDashShoot, new Vector3(90, -630, 0));
-            var stDashBackShoot = GetOrCreateState("Dash(ถอยหลังยิง)", clipDashBackShoot, new Vector3(-420, -790, 0));
-            var stDashBackJumpShoot = GetOrCreateState("Dash(ถอยหลังกระโดดยิง)", clipDashBackJumpShoot, new Vector3(910, -660, 0));
-            var stDashJumpShoot = GetOrCreateState("Dash(ไปข้างหน้ากระโดดยิง)", clipDashJumpShoot, new Vector3(1290, -600, 0));
+            var stDashShoot = GetOrCreateState("DashShoot", clipDashShoot, new Vector3(90, -630, 0));
+            var stDashBackShoot = GetOrCreateState("DashBackShoot", clipDashBackShoot, new Vector3(-420, -790, 0));
+            var stDashBackJumpShoot = GetOrCreateState("DashBackJumpShoot", clipDashBackJumpShoot, new Vector3(910, -660, 0));
+            var stDashJumpShoot = GetOrCreateState("DashJumpShootFwd", clipDashJumpShoot, new Vector3(1290, -600, 0));
 
             sm.defaultState = stIdle;
 
-            // Remove all transitions to rebuild clean, bug-free, snappy transitions
-            stIdle.transitions = new AnimatorStateTransition[0];
-            stWalk.transitions = new AnimatorStateTransition[0];
-            stJump.transitions = new AnimatorStateTransition[0];
-            stShoot.transitions = new AnimatorStateTransition[0];
-            stDash.transitions = new AnimatorStateTransition[0];
-            stDashBack.transitions = new AnimatorStateTransition[0];
-            stJumpShoot.transitions = new AnimatorStateTransition[0];
-            stDashShoot.transitions = new AnimatorStateTransition[0];
-            stDashBackShoot.transitions = new AnimatorStateTransition[0];
-            stDashBackJumpShoot.transitions = new AnimatorStateTransition[0];
-            stDashJumpShoot.transitions = new AnimatorStateTransition[0];
-            sm.anyStateTransitions = new AnimatorStateTransition[0];
+            // Remove all existing transitions cleanly using Unity Editor API
+            while (sm.anyStateTransitions.Length > 0)
+            {
+                sm.RemoveAnyStateTransition(sm.anyStateTransitions[0]);
+            }
+
+            foreach (var cs in sm.states)
+            {
+                while (cs.state.transitions.Length > 0)
+                {
+                    cs.state.RemoveTransition(cs.state.transitions[0]);
+                }
+            }
 
             // 1. Idle <-> Walk
             var tIdleToWalk = stIdle.AddTransition(stWalk);
@@ -139,9 +141,17 @@ namespace CaveDweller.EditorTools
             tWalkToIdle.hasExitTime = false;
             tWalkToIdle.duration = 0.05f;
 
-            // 2. AnyState -> Jump
+            // 2. AnyState -> Jump (Mid-air locomotion, blocked by actions)
             var tAnyToJump = sm.AddAnyStateTransition(stJump);
             tAnyToJump.AddCondition(AnimatorConditionMode.If, 0, "IsJumping");
+            tAnyToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsShooting");
+            tAnyToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumpShooting");
+            tAnyToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashing");
+            tAnyToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingBack");
+            tAnyToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingShoot");
+            tAnyToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingBackShoot");
+            tAnyToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingJumpShoot");
+            tAnyToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingBackJumpShoot");
             tAnyToJump.hasExitTime = false;
             tAnyToJump.duration = 0.05f;
             tAnyToJump.canTransitionToSelf = false;
@@ -161,6 +171,8 @@ namespace CaveDweller.EditorTools
             // 3. AnyState -> Dash (Forward)
             var tAnyToDash = sm.AddAnyStateTransition(stDash);
             tAnyToDash.AddCondition(AnimatorConditionMode.If, 0, "IsDashing");
+            tAnyToDash.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingShoot");
+            tAnyToDash.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingJumpShoot");
             tAnyToDash.hasExitTime = false;
             tAnyToDash.duration = 0.02f;
             tAnyToDash.canTransitionToSelf = false;
@@ -177,13 +189,15 @@ namespace CaveDweller.EditorTools
 
             // 4. AnyState -> Dash(ถอยหลัง) (Backward)
             var tAnyToDashBack = sm.AddAnyStateTransition(stDashBack);
-            tAnyToDashBack.AddCondition(AnimatorConditionMode.If, 0, "IsDashing(ถอยหลัง)");
+            tAnyToDashBack.AddCondition(AnimatorConditionMode.If, 0, "IsDashingBack");
+            tAnyToDashBack.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingBackShoot");
+            tAnyToDashBack.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingBackJumpShoot");
             tAnyToDashBack.hasExitTime = false;
             tAnyToDashBack.duration = 0.02f;
             tAnyToDashBack.canTransitionToSelf = false;
 
             var tDashBackToIdle = stDashBack.AddTransition(stIdle);
-            tDashBackToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashing(ถอยหลัง)");
+            tDashBackToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingBack");
             tDashBackToIdle.hasExitTime = false;
             tDashBackToIdle.duration = 0.05f;
 
@@ -192,77 +206,123 @@ namespace CaveDweller.EditorTools
             tDashBackExit.exitTime = 1f;
             tDashBackExit.duration = 0.05f;
 
-            // 5. AnyState -> Shoot
+            // 5. AnyState -> Shoot (Ground Shoot only)
             var tAnyToShoot = sm.AddAnyStateTransition(stShoot);
             tAnyToShoot.AddCondition(AnimatorConditionMode.If, 0, "IsShooting");
+            tAnyToShoot.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumping");
+            tAnyToShoot.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashing");
+            tAnyToShoot.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingBack");
             tAnyToShoot.hasExitTime = false;
             tAnyToShoot.duration = 0.02f;
             tAnyToShoot.canTransitionToSelf = false;
 
             var tShootToIdle = stShoot.AddTransition(stIdle);
-            tShootToIdle.hasExitTime = true;
-            tShootToIdle.exitTime = 0.9f;
+            tShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsShooting");
+            tShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsWalking");
+            tShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumping");
+            tShootToIdle.hasExitTime = false;
             tShootToIdle.duration = 0.05f;
 
-            // 6. AnyState -> JumpShoot
+            var tShootToWalk = stShoot.AddTransition(stWalk);
+            tShootToWalk.AddCondition(AnimatorConditionMode.IfNot, 0, "IsShooting");
+            tShootToWalk.AddCondition(AnimatorConditionMode.If, 0, "IsWalking");
+            tShootToWalk.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumping");
+            tShootToWalk.hasExitTime = false;
+            tShootToWalk.duration = 0.05f;
+
+            var tShootToJump = stShoot.AddTransition(stJump);
+            tShootToJump.AddCondition(AnimatorConditionMode.If, 0, "IsJumping");
+            tShootToJump.hasExitTime = false;
+            tShootToJump.duration = 0.05f;
+
+            // 6. AnyState -> JumpShoot (Air Shoot)
             var tAnyToJumpShoot = sm.AddAnyStateTransition(stJumpShoot);
             tAnyToJumpShoot.AddCondition(AnimatorConditionMode.If, 0, "IsJumpShooting");
             tAnyToJumpShoot.hasExitTime = false;
             tAnyToJumpShoot.duration = 0.02f;
             tAnyToJumpShoot.canTransitionToSelf = false;
 
-            var tJumpShootExit = stJumpShoot.AddTransition(stJump);
-            tJumpShootExit.hasExitTime = true;
-            tJumpShootExit.exitTime = 0.9f;
-            tJumpShootExit.duration = 0.05f;
+            var tJumpShootToJump = stJumpShoot.AddTransition(stJump);
+            tJumpShootToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumpShooting");
+            tJumpShootToJump.AddCondition(AnimatorConditionMode.If, 0, "IsJumping");
+            tJumpShootToJump.hasExitTime = false;
+            tJumpShootToJump.duration = 0.05f;
+
+            var tJumpShootToIdle = stJumpShoot.AddTransition(stIdle);
+            tJumpShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumpShooting");
+            tJumpShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumping");
+            tJumpShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsWalking");
+            tJumpShootToIdle.hasExitTime = false;
+            tJumpShootToIdle.duration = 0.05f;
+
+            var tJumpShootToWalk = stJumpShoot.AddTransition(stWalk);
+            tJumpShootToWalk.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumpShooting");
+            tJumpShootToWalk.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumping");
+            tJumpShootToWalk.AddCondition(AnimatorConditionMode.If, 0, "IsWalking");
+            tJumpShootToWalk.hasExitTime = false;
+            tJumpShootToWalk.duration = 0.05f;
 
             // 7. AnyState -> Dash(พุ่งยิง)
             var tAnyToDashShoot = sm.AddAnyStateTransition(stDashShoot);
-            tAnyToDashShoot.AddCondition(AnimatorConditionMode.If, 0, "IsDashingShoot(พุ่งยิง)");
+            tAnyToDashShoot.AddCondition(AnimatorConditionMode.If, 0, "IsDashingShoot");
             tAnyToDashShoot.hasExitTime = false;
             tAnyToDashShoot.duration = 0.02f;
             tAnyToDashShoot.canTransitionToSelf = false;
 
-            var tDashShootExit = stDashShoot.AddTransition(stIdle);
-            tDashShootExit.hasExitTime = true;
-            tDashShootExit.exitTime = 0.9f;
-            tDashShootExit.duration = 0.05f;
+            var tDashShootToIdle = stDashShoot.AddTransition(stIdle);
+            tDashShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingShoot");
+            tDashShootToIdle.hasExitTime = false;
+            tDashShootToIdle.duration = 0.05f;
 
             // 8. AnyState -> Dash(ถอยหลังยิง)
             var tAnyToDashBackShoot = sm.AddAnyStateTransition(stDashBackShoot);
-            tAnyToDashBackShoot.AddCondition(AnimatorConditionMode.If, 0, "IsDashing(ถอยหลังยิง)");
+            tAnyToDashBackShoot.AddCondition(AnimatorConditionMode.If, 0, "IsDashingBackShoot");
             tAnyToDashBackShoot.hasExitTime = false;
             tAnyToDashBackShoot.duration = 0.02f;
             tAnyToDashBackShoot.canTransitionToSelf = false;
 
-            var tDashBackShootExit = stDashBackShoot.AddTransition(stIdle);
-            tDashBackShootExit.hasExitTime = true;
-            tDashBackShootExit.exitTime = 0.9f;
-            tDashBackShootExit.duration = 0.05f;
+            var tDashBackShootToIdle = stDashBackShoot.AddTransition(stIdle);
+            tDashBackShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingBackShoot");
+            tDashBackShootToIdle.hasExitTime = false;
+            tDashBackShootToIdle.duration = 0.05f;
 
             // 9. AnyState -> Dash(ไปข้างหน้ากระโดดยิง)
             var tAnyToDashJumpShoot = sm.AddAnyStateTransition(stDashJumpShoot);
-            tAnyToDashJumpShoot.AddCondition(AnimatorConditionMode.If, 0, "IsDashing(กระโดดยิง)");
+            tAnyToDashJumpShoot.AddCondition(AnimatorConditionMode.If, 0, "IsDashingJumpShoot");
             tAnyToDashJumpShoot.hasExitTime = false;
             tAnyToDashJumpShoot.duration = 0.02f;
             tAnyToDashJumpShoot.canTransitionToSelf = false;
 
-            var tDashJumpShootExit = stDashJumpShoot.AddTransition(stIdle);
-            tDashJumpShootExit.hasExitTime = true;
-            tDashJumpShootExit.exitTime = 0.9f;
-            tDashJumpShootExit.duration = 0.05f;
+            var tDashJumpShootToJump = stDashJumpShoot.AddTransition(stJump);
+            tDashJumpShootToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingJumpShoot");
+            tDashJumpShootToJump.AddCondition(AnimatorConditionMode.If, 0, "IsJumping");
+            tDashJumpShootToJump.hasExitTime = false;
+            tDashJumpShootToJump.duration = 0.05f;
+
+            var tDashJumpShootToIdle = stDashJumpShoot.AddTransition(stIdle);
+            tDashJumpShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingJumpShoot");
+            tDashJumpShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumping");
+            tDashJumpShootToIdle.hasExitTime = false;
+            tDashJumpShootToIdle.duration = 0.05f;
 
             // 10. AnyState -> Dash(ถอยหลังกระโดดยิง)
             var tAnyToDashBackJumpShoot = sm.AddAnyStateTransition(stDashBackJumpShoot);
-            tAnyToDashBackJumpShoot.AddCondition(AnimatorConditionMode.If, 0, "IsDashingShoot(พุ่งถอยหลังยิง)");
+            tAnyToDashBackJumpShoot.AddCondition(AnimatorConditionMode.If, 0, "IsDashingBackJumpShoot");
             tAnyToDashBackJumpShoot.hasExitTime = false;
             tAnyToDashBackJumpShoot.duration = 0.02f;
             tAnyToDashBackJumpShoot.canTransitionToSelf = false;
 
-            var tDashBackJumpShootExit = stDashBackJumpShoot.AddTransition(stIdle);
-            tDashBackJumpShootExit.hasExitTime = true;
-            tDashBackJumpShootExit.exitTime = 0.9f;
-            tDashBackJumpShootExit.duration = 0.05f;
+            var tDashBackJumpShootToJump = stDashBackJumpShoot.AddTransition(stJump);
+            tDashBackJumpShootToJump.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingBackJumpShoot");
+            tDashBackJumpShootToJump.AddCondition(AnimatorConditionMode.If, 0, "IsJumping");
+            tDashBackJumpShootToJump.hasExitTime = false;
+            tDashBackJumpShootToJump.duration = 0.05f;
+
+            var tDashBackJumpShootToIdle = stDashBackJumpShoot.AddTransition(stIdle);
+            tDashBackJumpShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsDashingBackJumpShoot");
+            tDashBackJumpShootToIdle.AddCondition(AnimatorConditionMode.IfNot, 0, "IsJumping");
+            tDashBackJumpShootToIdle.hasExitTime = false;
+            tDashBackJumpShootToIdle.duration = 0.05f;
 
             EditorUtility.SetDirty(ctrl);
             Debug.Log("[AnimationIntegrator] Configured Animator Controller Character with all 11 clips and clean transitions.");
@@ -297,7 +357,8 @@ namespace CaveDweller.EditorTools
 
             string mDir = "Assets/Animation/Monster/";
             var clipIdle = AssetDatabase.LoadAssetAtPath<AnimationClip>(mDir + "idleEnemy.anim");
-            var clipWalk = AssetDatabase.LoadAssetAtPath<AnimationClip>(mDir + "WolkEnemy(ตีใกล้).anim");
+            var clipWalk = AssetDatabase.LoadAssetAtPath<AnimationClip>(mDir + "EnemyWolk.anim") 
+                           ?? AssetDatabase.LoadAssetAtPath<AnimationClip>(mDir + "WolkEnemy(ตีใกล้).anim");
             var clipAtk = AssetDatabase.LoadAssetAtPath<AnimationClip>(mDir + "EnemyAttack(ตีใกล้).anim");
             var clipShoot = AssetDatabase.LoadAssetAtPath<AnimationClip>(mDir + "EnemyShoot.anim");
 
@@ -323,11 +384,18 @@ namespace CaveDweller.EditorTools
 
             sm.defaultState = stIdle;
 
-            stIdle.transitions = new AnimatorStateTransition[0];
-            stWalk.transitions = new AnimatorStateTransition[0];
-            stAtk.transitions = new AnimatorStateTransition[0];
-            stShoot.transitions = new AnimatorStateTransition[0];
-            sm.anyStateTransitions = new AnimatorStateTransition[0];
+            while (sm.anyStateTransitions.Length > 0)
+            {
+                sm.RemoveAnyStateTransition(sm.anyStateTransitions[0]);
+            }
+
+            foreach (var cs in sm.states)
+            {
+                while (cs.state.transitions.Length > 0)
+                {
+                    cs.state.RemoveTransition(cs.state.transitions[0]);
+                }
+            }
 
             // Idle <-> Walk
             var tIdleToWalk = stIdle.AddTransition(stWalk);
@@ -417,7 +485,7 @@ namespace CaveDweller.EditorTools
             }
 
             // 3. Update active scene objects
-            var players = Object.FindObjectsByType<CaveDweller.Player.PlayerMovement>(FindObjectsSortMode.None);
+            var players = Object.FindObjectsByType<CaveDweller.Player.PlayerMovement>();
             foreach (var p in players)
             {
                 var anim = p.GetComponent<Animator>();
@@ -432,7 +500,7 @@ namespace CaveDweller.EditorTools
                 EditorUtility.SetDirty(p.gameObject);
             }
 
-            var enemies = Object.FindObjectsByType<CaveDweller.Enemies.BaseEnemy>(FindObjectsSortMode.None);
+            var enemies = Object.FindObjectsByType<CaveDweller.Enemies.BaseEnemy>();
             foreach (var e in enemies)
             {
                 var anim = e.GetComponent<Animator>();

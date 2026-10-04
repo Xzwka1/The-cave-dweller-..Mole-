@@ -92,11 +92,13 @@ namespace CaveDweller.Lighting
 #### A. `PlayerMovement.cs`
 * **หน้าที่:** จัดการฟิสิกส์การเดิน, กระโดด, และ Dash
 * **Properties & Fields:**
-  * `float moveSpeed = 7f;`
-  * `float jumpForce = 12f;`
-  * `float dashSpeed = 16f;`
-  * `float dashDuration = 0.2f;`
+  * `float moveSpeed = 8.5f;` (จูนขึ้นจากสเปกเดิม 7)
+  * `float jumpForce = 8.5f;` (จูนลงจากสเปกเดิม 12)
+  * `float dashSpeed = 22f;` (จูนขึ้นจากสเปกเดิม 16)
+  * `float dashDuration = 0.22f;`
   * `float dashCooldown = 1.0f;`
+  * `float postDashGraceTime = 0.1f;`
+  * `float fallGravityMultiplier = 1.6f;`
   * `LayerMask groundLayer;`
   * `Transform groundCheckPoint;`
 * **Mechanics:**
@@ -107,12 +109,13 @@ namespace CaveDweller.Lighting
 * **หน้าที่:** ระบบเล็ง 360 องศาตามเมาส์ และการยิงปืนลูกซอง 2 นัด
 * **Properties & Fields:**
   * `int maxAmmo = 2;`
-  * `int currentAmmo = 2;`
   * `float reloadTime = 1.2f;`
-  * `int pelletsCount = 6;` (จำนวนเม็ดลูกซองต่อการยิง 1 นัด)
-  * `float spreadAngle = 18f;`
-  * `float bulletRange = 12f;`
-  * `int damagePerPellet = 20;`
+  * `int pelletsCount = 7;` (จำนวนเม็ดลูกซองต่อการยิง 1 นัด — จูนขึ้นจากสเปกเดิม 6)
+  * `float spreadAngle = 36f;` (จูนขึ้นจากสเปกเดิม 18°)
+  * `float bulletRange = 22f;` (จูนขึ้นจากสเปกเดิม 12m)
+  * `int damagePerPellet = 18;` (จูนลงจากสเปกเดิม 20 → 7 × 18 = 126 dmg ต่อนัด)
+  * `float projectileSpeed = 32f;`
+  * `float recoilForce = 1.6f;` / `float screenShakeMagnitude = 0.07f;`
   * `Light2D muzzleFlashLight;` (แสงไฟส่องสว่างตอนยิง)
   * `GameObject bulletTracerPrefab;` (กระสุนพร้อม Point Light2D ติดไปกับหัวกระสุน)
 * **Mechanics:**
@@ -162,14 +165,15 @@ namespace CaveDweller.Lighting
 
 ---
 
-### 4.3 Lighting & Atmosphere System (`CaveDweller.Environment`)
+### 4.3 Lighting & Atmosphere System (`CaveDweller.Lighting`)
 
 1. **Global Darkness:**
    * ฉากจะมี `Global Light 2D` โดยปรับ Color เป็นสีดำมืดมิด (`Intensity = 0.05f` เพื่อให้เห็นเค้าโครงฉากเพียงจางๆ)
 2. **Player Ambient Light:**
    * มี Point Light 2D วงเล็กๆ ติดตัวผู้เล่น (`Radius = 1.5m, Intensity = 0.3f`)
 3. **Muzzle Flash Light:**
-   * สว่างวาบเฉพาะช่วงเสี้ยววินาทีของการลั่นไก (`Radius = 8m - 12m, Intensity = 2.0f`)
+   * สว่างวาบเฉพาะช่วงเสี้ยววินาทีของการลั่นไก (`Radius = 2m - 3.5m, Intensity = 2.0f`, fade `0.1–0.2s`)
+   * ⚠️ สเปกเดิมเขียน `8–12m` แต่ field จริงตั้ง `2–3.5m` — เดิมมี `Mathf.Clamp(radius, 8f, 12f)` บังคับทับให้เป็น 8 ตลอด (field ตาย) ตอนนี้ลบ clamp แล้ว ค่าที่เห็นในเกมจึงเป็น `2–3.5m` ตาม Inspector จริง ถ้าต้องการ 8–12m ให้แก้ `flashRadiusMin/Max` บน `MuzzleFlashLight` (Player prefab)
 4. **Bullet Tracer Light:**
    * กระสุนลูกซองแต่ละนัดมี Point Light 2D เล็กๆ นำทางไปตามวิถีกระสุนเพื่อเปิดเผยพื้นที่ข้างหน้า
 
@@ -180,7 +184,8 @@ namespace CaveDweller.Lighting
 #### A. `CameraController.cs`
 * ติดตามตำแหน่งของ `Player` แบบ Smooth Follow (Damping)
 * รองรับ **Mouse Scroll Wheel Zoom**:
-  * ขยาย Orthographic Size จาก Min (5.0) ไป Max (8.5) เพื่อให้ผู้เล่นเลื่อนสำรวจพื้นที่ได้ แต่ความมืดและแสงยังคงเท่าเดิม
+  * ขยาย Orthographic Size จาก Min (5.0) ไป Max (11.5) เพื่อให้ผู้เล่นเลื่อนสำรวจพื้นที่ได้ แต่ความมืดและแสงยังคงเท่าเดิม
+* **Confine Bounds (เพิ่มภายหลัง ไม่มีในสเปกเดิม):** จำกัด viewport ไม่ให้หลุดขอบด่านด้วย `CameraBounds` (Collider2D) หรือ `minBounds/maxBounds` + ระบบ `CameraZone` สำหรับล็อกกล้องต่อห้อง (`Assets/Script/Core/CameraZone.cs`, เครื่องมือสร้างใน `Assets/Editor/CameraConfinerEditor.cs`)
 
 #### B. `GameFlowManager.cs` (Singleton)
 * ตรวจสอบเงื่อนไข:

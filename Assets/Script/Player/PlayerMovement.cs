@@ -25,6 +25,10 @@ namespace CaveDweller.Player
         [SerializeField] private LayerMask groundLayer;
         [SerializeField] private float groundCheckDistance = 0.15f;
 
+        [Header("Friction")]
+        [Tooltip("Shared frictionless material (Project asset). If empty, movement keeps the collider's current material and logs a warning so broken content never hides.")]
+        [SerializeField] private PhysicsMaterial2D frictionlessMaterial;
+
         [Header("Animation")]
         [SerializeField] private Animator animator;
         [SerializeField] private string dashTriggerName = "Dash";
@@ -85,7 +89,7 @@ namespace CaveDweller.Player
             animDashBackTriggerHash = Animator.StringToHash(dashBackTriggerName);
             animJumpTriggerHash = Animator.StringToHash(jumpTriggerName);
             animIsDashingHash = Animator.StringToHash(isDashingBoolName);
-            animIsDashingBackHash = Animator.StringToHash("IsDashing(ถอยหลัง)");
+            animIsDashingBackHash = Animator.StringToHash("IsDashingBack");
             animIsWalkingHash = Animator.StringToHash("IsWalking");
             animIsJumpingHash = Animator.StringToHash("IsJumping");
             animSpeedHash = Animator.StringToHash(speedFloatName);
@@ -105,15 +109,19 @@ namespace CaveDweller.Player
                 }
             }
 
-            // Zero friction physics material to prevent sticking/floating against walls & enemies
+            // Zero friction physics material: use the Project asset if assigned;
+            // otherwise keep the collider's current material and warn once so
+            // broken content never hides behind a silent runtime fix.
             if (col != null)
             {
-                var zeroFriction = new PhysicsMaterial2D("PlayerFrictionless")
+                if (frictionlessMaterial != null)
                 {
-                    friction = 0f,
-                    bounciness = 0f
-                };
-                col.sharedMaterial = zeroFriction;
+                    col.sharedMaterial = frictionlessMaterial;
+                }
+                else if (col.sharedMaterial == null)
+                {
+                    Debug.LogWarning("[PlayerMovement] frictionlessMaterial is not assigned and collider has no material. Friction left as-is.", this);
+                }
 
                 if (col is BoxCollider2D boxCol && boxCol.edgeRadius < 0.02f)
                 {
@@ -247,7 +255,7 @@ namespace CaveDweller.Player
             {
                 animator.SetTrigger(animJumpTriggerHash);
             }
-            CaveDweller.Core.SoundManager.Instance.PlayJumpSFX();
+            CaveDweller.Core.SoundManager.Instance?.PlayJumpSFX();
         }
 
         private void CheckGround()
@@ -277,7 +285,7 @@ namespace CaveDweller.Player
             isDashing = true;
 
             EnableEnemyPhasing();
-            CaveDweller.Core.SoundManager.Instance.PlayDashSFX();
+            CaveDweller.Core.SoundManager.Instance?.PlayDashSFX();
 
             rb.gravityScale = 0f;
             float dashDir = horizontalInput != 0f ? Mathf.Sign(horizontalInput) : facingDirection;

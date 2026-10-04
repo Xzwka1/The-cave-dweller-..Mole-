@@ -2608,7 +2608,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e84dcc19a30f3147aa744161b660b40, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Lighting.DynamicMuzzleLight
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Lighting.DynamicMuzzleLight
   flashIntensity: 2
   flashRadiusMin: 2
   flashRadiusMax: 3.5
@@ -2726,7 +2726,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8bb36bd0f5495d40b03425416b541be, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Enemies.AmbushEnemyDarkness
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Enemies.AmbushEnemyDarkness
   maxHealth: 20
   currentHealth: 20
   contactDamage: 20
@@ -2950,7 +2950,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89fe35a7d90f7f34092584d89a5f77b9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Enemies.PatrolEnemyWithLight
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Enemies.PatrolEnemyWithLight
   maxHealth: 140
   currentHealth: 140
   contactDamage: 20
@@ -3388,7 +3388,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 807c9d11d1b05494ab361797331bb37e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Core.GameFlowManager
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Core.GameFlowManager
   persistAcrossScenes: 0
   playerObject: {fileID: 882084980711}
   playerTag: Player
@@ -5193,7 +5193,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7988ff6dd781238419d27825f95de159, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerMovement
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Player.PlayerMovement
   moveSpeed: 8.5
   jumpForce: 12
   fallGravityMultiplier: 1.6
@@ -5224,7 +5224,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3ecd12531658fa041a4b4875fb5ea056, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerHealth
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Player.PlayerHealth
   maxHealth: 100
   invulnerabilityDuration: 0.5
   spriteRenderer: {fileID: 882084980714}
@@ -5296,7 +5296,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f90a132129ca13840a03cf14b6994d60, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerWeapon
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Player.PlayerWeapon
   maxAmmo: 2
   reloadTime: 1.2
   pelletsCount: 7
@@ -5363,7 +5363,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 879f8deba99d45ca9fbdad56f2f1002f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Player.PlayerHealthUI
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Player.PlayerHealthUI
   playerHealth: {fileID: 882084980717}
   healthSlider: {fileID: 0}
   healthBarFill: {fileID: 882090001014}
@@ -5579,7 +5579,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b346418e382bbc140b75a591ff66c193, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MAP_Teleporter
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Level.MapTeleporter
   nextSceneName: Third_MAP
 --- !u!1 &882099900011
 GameObject:
@@ -5693,7 +5693,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ece7e84a1bffbc4285da7b102e39d80, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Core.CameraController
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Core.CameraController
   target: {fileID: 882084980715}
   offset: {x: 0, y: 1.2, z: -10}
   smoothSpeed: 0.15

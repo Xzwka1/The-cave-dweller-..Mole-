@@ -313,7 +313,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1ee3124c1378394dbe9e7c61565ab4e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CaveDweller.Combat.Projectile
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Combat.Projectile
   speed: 22
   lifetime: 0.45
   damage: 20
