@@ -151,7 +151,15 @@ namespace CaveDweller.Player
             }
         }
 
-        private void Die()
+        public void InstantKill()
+        {
+            if (isDead) return;
+            currentHealth = 0;
+            OnHealthChanged?.Invoke(0, maxHealth);
+            Die();
+        }
+
+        public void Die()
         {
             if (isDead) return;
 

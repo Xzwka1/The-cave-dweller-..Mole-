@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &460701782389234502
 Transform:
   m_ObjectHideFlags: 0
@@ -39,7 +39,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4969261222587614610}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
@@ -116,7 +116,7 @@ GameObject:
   - component: {fileID: 4046987609390356799}
   - component: {fileID: 1397457424944220399}
   m_Layer: 7
-  m_Name: Enemy_Light
+  m_Name: Enemy_Melee
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -188,7 +188,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -7240236021892129946, guid: 0c458e38d15d3e24cb473f277e1a10cd, type: 3}
-  m_Color: {r: 0.88, g: 0.28, b: 0.28, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -283,10 +283,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89fe35a7d90f7f34092584d89a5f77b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Enemies.PatrolEnemyWithLight
-  maxHealth: 140
-  currentHealth: 140
+  maxHealth: 36
+  currentHealth: 36
   contactDamage: 20
   destroyDelay: 0.5
+  enableHitFlash: 1
+  hitFlashColor: {r: 1, g: 0.3, b: 0.3, a: 1}
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
@@ -295,9 +297,12 @@ MonoBehaviour:
   patrolPointA: {fileID: 0}
   patrolPointB: {fileID: 0}
   patrolSpeed: 2
-  spotLight: {fileID: 8094454022843843905}
+  patrolIdleMin: 1
+  patrolIdleMax: 2
   viewDistance: 8
   viewAngle: 60
+  proximityDetectDistance: 2
+  losePlayerGraceTime: 1.5
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -305,10 +310,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   chaseSpeed: 4.2
-  attackRange: 1.2
+  attackRange: 2.2
   attackDamage: 20
   attackCooldown: 1
+  stopAtLedgeDuringChase: 1
   wallCheckDistance: 0.3
+  ledgeCheckForwardOffset: 0.45
+  ledgeCheckDownDistance: 0.7
+  turnDeadzone: 0.4
+  spriteFacesLeftByDefault: 1
   currentState: 0
 --- !u!95 &1397457424944220399
 Animator:

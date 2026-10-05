@@ -274,7 +274,7 @@ MonoBehaviour:
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0.4
-  m_PointLightOuterRadius: 6.0
+  m_PointLightOuterRadius: 6
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
@@ -323,7 +323,7 @@ MonoBehaviour:
   skinWidth: 0.05
   tracerLight: {fileID: 6817154870878625936}
   illuminatedIntensity: 1.5
-  impactEffectPrefab: {fileID: 0}
+  impactEffectPrefab: {fileID: 9204047846497265149, guid: 3bdf612c757a003418f2727f59042284, type: 3}
   allowManualDetonate: 0
 --- !u!212 &197636543300728189
 SpriteRenderer:

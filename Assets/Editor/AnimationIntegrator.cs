@@ -13,8 +13,16 @@ namespace CaveDweller.EditorTools
         [MenuItem("Tools/Restart MCP Server")]
         public static void RestartMCPServer()
         {
-            UnityMCP.Editor.MCPBridgeServer.Stop();
-            UnityMCP.Editor.MCPBridgeServer.Start();
+            var serverType = System.Type.GetType("UnityMCP.Editor.MCPBridgeServer, AnkleBreaker.UnityMCP.Editor");
+            if (serverType != null)
+            {
+                var stopMethod = serverType.GetMethod("Stop", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null, new[] { typeof(bool) }, null);
+                if (stopMethod != null) stopMethod.Invoke(null, new object[] { true });
+                else serverType.GetMethod("Stop", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null, System.Type.EmptyTypes, null)?.Invoke(null, null);
+
+                var startMethod = serverType.GetMethod("Start", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static, null, System.Type.EmptyTypes, null);
+                startMethod?.Invoke(null, null);
+            }
         }
 
         [MenuItem("Tools/Integrate Animations")]
@@ -466,7 +474,7 @@ namespace CaveDweller.EditorTools
             }
 
             // 2. Update Enemy prefabs
-            string[] enemyPrefabs = new[] { "Assets/Prefabs/Enemy_Light.prefab", "Assets/Prefabs/Enemy_Dark.prefab" };
+            string[] enemyPrefabs = new[] { "Assets/Prefabs/Enemy_Melee.prefab", "Assets/Prefabs/Enemy_Shooter.prefab" };
             foreach (var ep in enemyPrefabs)
             {
                 using (var scope = new PrefabUtility.EditPrefabContentsScope(ep))

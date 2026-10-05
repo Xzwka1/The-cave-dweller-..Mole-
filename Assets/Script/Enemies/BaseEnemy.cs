@@ -12,12 +12,17 @@ namespace CaveDweller.Enemies
     public abstract class BaseEnemy : MonoBehaviour, IDamageable
     {
         [Header("Health Settings")]
-        [SerializeField] protected int maxHealth = 140;
-        [SerializeField] protected int currentHealth = 100;
+        [SerializeField] protected int maxHealth = 36;
+        [SerializeField] protected int currentHealth = 36;
         [SerializeField] private int contactDamage = 20;
 
         [Header("Death Settings")]
         [SerializeField] private float destroyDelay = 0.5f;
+
+        [Header("Damage Visual Settings")]
+        [Tooltip("Flash color effect when enemy takes damage.")]
+        [SerializeField] private bool enableHitFlash = true;
+        [SerializeField] private Color hitFlashColor = new Color(1f, 0.3f, 0.3f, 1f);
 
         [Header("Ground Check Settings")]
         [SerializeField] protected LayerMask groundLayer;
@@ -57,7 +62,7 @@ namespace CaveDweller.Enemies
         {
             if (maxHealth < 1)
             {
-                maxHealth = 140;
+                maxHealth = 36;
             }
 
             cachedRigidbody = GetComponent<Rigidbody2D>();
@@ -82,7 +87,8 @@ namespace CaveDweller.Enemies
 
             if (cachedSpriteRenderer != null)
             {
-                originalColor = cachedSpriteRenderer.color;
+                cachedSpriteRenderer.color = Color.white;
+                originalColor = Color.white;
             }
 
             if (cachedRigidbody != null)
@@ -102,12 +108,7 @@ namespace CaveDweller.Enemies
                 }
             }
 
-            if (currentHealth <= 0 || currentHealth > maxHealth)
-            {
-                currentHealth = maxHealth;
-            }
-
-            currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+            currentHealth = maxHealth;
         }
 
         protected virtual void Start()
@@ -155,7 +156,7 @@ namespace CaveDweller.Enemies
         /// </summary>
         protected virtual void PlayHitFlash()
         {
-            if (cachedSpriteRenderer == null) return;
+            if (!enableHitFlash || cachedSpriteRenderer == null) return;
             if (hitFlashRoutine != null) StopCoroutine(hitFlashRoutine);
             hitFlashRoutine = StartCoroutine(FlashOnDamageRoutine());
         }
@@ -168,6 +169,8 @@ namespace CaveDweller.Enemies
             }
 
             isDying = true;
+
+            CaveDweller.Core.SoundManager.Instance?.PlayEnemyDieSFX();
 
             if (cachedCollider != null)
             {
@@ -265,8 +268,7 @@ namespace CaveDweller.Enemies
                 yield break;
             }
 
-            Color flashColor = Color.red;
-            cachedSpriteRenderer.color = flashColor;
+            cachedSpriteRenderer.color = hitFlashColor;
 
             yield return new WaitForSeconds(0.1f);
 

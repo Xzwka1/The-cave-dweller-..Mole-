@@ -49,6 +49,7 @@ namespace CaveDweller.Player
         private int animIsDashingHash;
         private int animIsDashingBackHash;
         private int animIsWalkingHash;
+        private int animIsWalkingBackHash;
         private int animIsJumpingHash;
         private int animSpeedHash;
         private int animIsGroundedHash;
@@ -58,6 +59,8 @@ namespace CaveDweller.Player
         private bool isDashing;
         private bool isDashingBackward;
         private bool canDash = true;
+        private float footstepTimer = 0.1f;
+        [SerializeField] private float footstepInterval = 0.35f;
         private bool isPhasingEnemies;
         private float facingDirection = 1f; // 1 = Right, -1 = Left
         private float originalGravity;
@@ -91,6 +94,7 @@ namespace CaveDweller.Player
             animIsDashingHash = Animator.StringToHash(isDashingBoolName);
             animIsDashingBackHash = Animator.StringToHash("IsDashingBack");
             animIsWalkingHash = Animator.StringToHash("IsWalking");
+            animIsWalkingBackHash = Animator.StringToHash("IsWalkingBack");
             animIsJumpingHash = Animator.StringToHash("IsJumping");
             animSpeedHash = Animator.StringToHash(speedFloatName);
             animIsGroundedHash = Animator.StringToHash(isGroundedBoolName);
@@ -143,49 +147,74 @@ namespace CaveDweller.Player
             ReadInput();
             CheckGround();
 
-            // Flip sprite according to movement, or mouse aim direction when idle
-            if (horizontalInput > 0.05f)
+            // Flip sprite to follow mouse aim cursor (or movement direction fallback)
+            Camera cam = Camera.main;
+            if (cam != null)
             {
-                facingDirection = 1f;
-                if (spriteRenderer != null) spriteRenderer.flipX = false;
-            }
-            else if (horizontalInput < -0.05f)
-            {
-                facingDirection = -1f;
-                if (spriteRenderer != null) spriteRenderer.flipX = true;
+                Vector2 mouseScreen = Vector2.zero;
+#if ENABLE_INPUT_SYSTEM
+                if (Mouse.current != null) mouseScreen = Mouse.current.position.ReadValue();
+#else
+                mouseScreen = Input.mousePosition;
+#endif
+                Vector3 mouseWorld = cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, Mathf.Abs(cam.transform.position.z)));
+                float mouseOffset = mouseWorld.x - transform.position.x;
+                if (mouseOffset > 0.05f)
+                {
+                    facingDirection = 1f;
+                    if (spriteRenderer != null) spriteRenderer.flipX = false;
+                }
+                else if (mouseOffset < -0.05f)
+                {
+                    facingDirection = -1f;
+                    if (spriteRenderer != null) spriteRenderer.flipX = true;
+                }
             }
             else
             {
-                // Idle: face towards mouse cursor
-                Camera cam = Camera.main;
-                if (cam != null && spriteRenderer != null)
+                if (horizontalInput > 0.05f)
                 {
-                    Vector2 mouseScreen = Vector2.zero;
-#if ENABLE_INPUT_SYSTEM
-                    if (Mouse.current != null) mouseScreen = Mouse.current.position.ReadValue();
-#else
-                    mouseScreen = Input.mousePosition;
-#endif
-                    Vector3 mouseWorld = cam.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, Mathf.Abs(cam.transform.position.z)));
-                    if (mouseWorld.x < transform.position.x - 0.2f)
-                    {
-                        facingDirection = -1f;
-                        spriteRenderer.flipX = true;
-                    }
-                    else if (mouseWorld.x > transform.position.x + 0.2f)
-                    {
-                        facingDirection = 1f;
-                        spriteRenderer.flipX = false;
-                    }
+                    facingDirection = 1f;
+                    if (spriteRenderer != null) spriteRenderer.flipX = false;
                 }
+                else if (horizontalInput < -0.05f)
+                {
+                    facingDirection = -1f;
+                    if (spriteRenderer != null) spriteRenderer.flipX = true;
+                }
+            }
+
+            // Check if moving horizontally, and if moving backwards relative to facing direction
+            bool isMovingHorizontally = Mathf.Abs(horizontalInput) > 0.05f;
+            bool isMovingBackward = false;
+            if (isMovingHorizontally)
+            {
+                float moveSign = Mathf.Sign(horizontalInput);
+                isMovingBackward = (moveSign != facingDirection);
             }
 
             if (animator != null)
             {
                 animator.SetFloat(animSpeedHash, Mathf.Abs(horizontalInput));
                 animator.SetBool(animIsGroundedHash, isGrounded);
-                animator.SetBool(animIsWalkingHash, Mathf.Abs(horizontalInput) > 0.05f && isGrounded);
+                animator.SetBool(animIsWalkingHash, isMovingHorizontally && isGrounded);
+                animator.SetBool(animIsWalkingBackHash, isMovingHorizontally && isGrounded && isMovingBackward);
                 animator.SetBool(animIsJumpingHash, !isGrounded);
+            }
+
+            // Footstep SFX when grounded and moving
+            if (isGrounded && Mathf.Abs(horizontalInput) > 0.05f && !isDashing)
+            {
+                footstepTimer -= Time.deltaTime;
+                if (footstepTimer <= 0f)
+                {
+                    footstepTimer = footstepInterval;
+                    CaveDweller.Core.SoundManager.Instance?.PlayFootstepSFX();
+                }
+            }
+            else
+            {
+                footstepTimer = 0.1f;
             }
         }
 

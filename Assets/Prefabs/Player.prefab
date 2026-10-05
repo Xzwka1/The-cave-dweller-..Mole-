@@ -137,7 +137,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.327748, y: 1.9615386}
+    oldSize: {x: 0.7415696, y: 1.9615386}
     newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -206,6 +206,7 @@ MonoBehaviour:
   isDashingBoolName: IsDashing
   speedFloatName: Speed
   isGroundedBoolName: IsGrounded
+  footstepInterval: 0.35
 --- !u!114 &7100000000000007
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,7 +397,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Player.PlayerWeapon
   maxAmmo: 2
-  reloadTime: 1.2
+  reloadTime: 5.78
   pelletsCount: 7
   spreadAngle: 36
   bulletRange: 22
@@ -409,6 +410,8 @@ MonoBehaviour:
   muzzlePoint: {fileID: 7100000000000032}
   muzzleFlashLight: {fileID: 7100000000000044}
   bulletTracerPrefab: {fileID: 7620808863313659146, guid: 2040226b15d49814e9550aaa5542d714, type: 3}
+  muzzleSparksPrefab: {fileID: 0}
+  impactSparksPrefab: {fileID: 0}
   tracerLifetime: 0.06
   projectileSpeed: 32
 --- !u!1 &7100000000000031

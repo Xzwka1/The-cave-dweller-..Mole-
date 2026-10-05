@@ -7,7 +7,7 @@
       ],
       "env": {
         "UNITY_HUB_PATH": "C:\\Program Files\\Unity Hub\\Unity Hub.exe",
-        "UNITY_BRIDGE_PORT": "7891"
+        "UNITY_BRIDGE_PORT": "7890"
       },
       "alwaysAllow": [
         "*",

@@ -27,6 +27,8 @@ namespace CaveDweller.Player
         [SerializeField] private Transform muzzlePoint;
         [SerializeField] private Light2D muzzleFlashLight;
         [SerializeField] private GameObject bulletTracerPrefab;
+        [SerializeField] private GameObject muzzleSparksPrefab;
+        [SerializeField] private GameObject impactSparksPrefab;
 
         [Header("Tracer Settings")]
         [SerializeField] private float tracerLifetime = 0.06f;
@@ -69,6 +71,8 @@ namespace CaveDweller.Player
         public Transform MuzzlePoint => muzzlePoint;
         public Light2D MuzzleFlashLight => muzzleFlashLight;
         public GameObject BulletTracerPrefab => bulletTracerPrefab;
+        public GameObject MuzzleSparksPrefab => muzzleSparksPrefab;
+        public GameObject ImpactSparksPrefab => impactSparksPrefab;
 
         private void Awake()
         {
@@ -275,6 +279,12 @@ namespace CaveDweller.Player
                 }
             }
 
+            if (muzzleSparksPrefab != null)
+            {
+                Quaternion sparkRot = Quaternion.Euler(0f, 0f, centerAngle);
+                Instantiate(muzzleSparksPrefab, origin, sparkRot);
+            }
+
             bool isProjectilePrefab = false;
             if (bulletTracerPrefab != null && bulletTracerPrefab.GetComponent<Projectile>() != null)
             {
@@ -343,6 +353,10 @@ namespace CaveDweller.Player
                         if (damageable != null)
                         {
                             damageable.TakeDamage(damagePerPellet);
+                        }
+                        if (impactSparksPrefab != null)
+                        {
+                            Instantiate(impactSparksPrefab, endPoint, Quaternion.identity);
                         }
                         break;
                     }
@@ -417,6 +431,12 @@ namespace CaveDweller.Player
                 StopCoroutine(reloadCoroutine);
                 reloadCoroutine = null;
             }
+
+            if (CaveDweller.Core.SoundManager.TryGetInstance(out var sfxMgr))
+            {
+                sfxMgr.PlayGunReloadSFX();
+            }
+
             reloadCoroutine = StartCoroutine(ReloadCoroutine());
         }
 
@@ -424,7 +444,17 @@ namespace CaveDweller.Player
         {
             isReloading = true;
 
-            yield return new WaitForSeconds(reloadTime);
+            float duration = reloadTime;
+            if (CaveDweller.Core.SoundManager.TryGetInstance(out var sfxMgr))
+            {
+                float sfxDur = sfxMgr.GetReloadDuration();
+                if (sfxDur > 0f)
+                {
+                    duration = sfxDur;
+                }
+            }
+
+            yield return new WaitForSeconds(duration);
 
             currentAmmo = maxAmmo;
             isReloading = false;
@@ -513,6 +543,18 @@ namespace CaveDweller.Player
             if (muzzleFlashLight != null)
             {
                 muzzleFlashLight.enabled = false;
+            }
+
+            if (reloadCoroutine != null)
+            {
+                StopCoroutine(reloadCoroutine);
+                reloadCoroutine = null;
+                isReloading = false;
+            }
+
+            if (CaveDweller.Core.SoundManager.TryGetInstance(out var sfxMgr))
+            {
+                sfxMgr.StopGunReloadSFX();
             }
         }
     }

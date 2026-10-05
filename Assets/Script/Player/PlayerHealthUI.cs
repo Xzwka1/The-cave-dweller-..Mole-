@@ -23,6 +23,12 @@ namespace CaveDweller.Player
         [SerializeField] private bool smoothDrain = true;
         [SerializeField] private float drainSpeed = 5f;
 
+        [Header("Sprite Fill Mapping (For composite bar sprites with portraits)")]
+        [Tooltip("Minimum fillAmount where the colored health bar starts (0.286 for HP_100 sprite).")]
+        [SerializeField] private float minFill = 0.286f;
+        [Tooltip("Maximum fillAmount where the colored health bar ends (0.957 for HP_100 sprite).")]
+        [SerializeField] private float maxFill = 0.957f;
+
         [Header("Heart / Slot Display (Fallback / Optional)")]
         [Tooltip("List or array of heart/health icons in order from left to right.")]
         [SerializeField] private Image[] healthIcons;
@@ -150,9 +156,20 @@ namespace CaveDweller.Player
         public void UpdateUI(int currentHp, int maxHp)
         {
             if (maxHp <= 0) maxHp = 100;
-            targetFill = Mathf.Clamp01((float)currentHp / maxHp);
+            float normalized = Mathf.Clamp01((float)currentHp / maxHp);
 
-            if (!smoothDrain)
+            // If player is dead or HP <= 0, fill completely drains to 0
+            if (currentHp <= 0)
+            {
+                targetFill = 0f;
+            }
+            else
+            {
+                // Map the health percentage accurately across the colored bar region so it doesn't look empty when player still has HP
+                targetFill = Mathf.Lerp(minFill, maxFill, normalized);
+            }
+
+            if (!smoothDrain || currentHp <= 0)
             {
                 currentFill = targetFill;
                 ApplyFill(currentFill);

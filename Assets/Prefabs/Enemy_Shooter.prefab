@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4664839775018282923}
   - component: {fileID: 3925752977222330553}
   m_Layer: 7
-  m_Name: Enemy_Dark
+  m_Name: Enemy_Shooter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -87,7 +87,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -7240236021892129946, guid: 0c458e38d15d3e24cb473f277e1a10cd, type: 3}
-  m_Color: {r: 0.35, g: 0.18, b: 0.45, a: 0.35}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -182,27 +182,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8bb36bd0f5495d40b03425416b541be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Enemies.AmbushEnemyDarkness
-  maxHealth: 20
-  currentHealth: 20
+  maxHealth: 36
+  currentHealth: 36
   contactDamage: 20
   destroyDelay: 0.5
+  enableHitFlash: 1
+  hitFlashColor: {r: 1, g: 0.3, b: 0.3, a: 1}
   groundLayer:
     serializedVersion: 2
     m_Bits: 0
   groundCheckDistance: 0.15
   frictionlessMaterial: {fileID: 6200000, guid: 7a2f4c919a32490fb19de748c109df32, type: 2}
-  proximityRadius: 2.8
-  lungeSpeed: 10
-  lungeDuration: 0.35
-  lungeCooldown: 2
-  returnToDormantDelay: 2
-  dormantAlpha: 0.35
-  awakenedAlpha: 1
-  ambushLight: {fileID: 5415738395959367681}
+  detectionRange: 9
+  shootCooldown: 2
+  shootDamage: 15
+  bulletSpeed: 10
+  bulletLifetime: 3
+  bulletPrefab: {fileID: 3473791787780874231, guid: 10e9f58f613cec64daa61986ef0293c1, type: 3}
+  firePoint: {fileID: 0}
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 1
-  playerTransform: {fileID: 0}
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  spriteFacesLeftByDefault: 1
+  turnDeadzone: 0.4
 --- !u!95 &3925752977222330553
 Animator:
   serializedVersion: 7
@@ -241,7 +246,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4015829305284544658
 Transform:
   m_ObjectHideFlags: 0

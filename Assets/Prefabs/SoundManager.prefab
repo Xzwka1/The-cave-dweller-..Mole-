@@ -45,18 +45,59 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Core.SoundManager
   bgmSource: {fileID: 0}
+  ambientSource: {fileID: 0}
   sfxSource: {fileID: 0}
   victoryMusic: {fileID: 8300000, guid: 417f8ec8b30ddc141af3bc2d3bfc49eb, type: 3}
-  mainMenuMusic: {fileID: 0}
-  caveAmbientMusic: {fileID: 0}
-  bgmVolume: 0.8
+  mainMenuMusic: {fileID: 8300000, guid: 507372d066e67ab46913eef638cd94ed, type: 3}
+  inGameMusic: {fileID: 8300000, guid: 54416238d89880c41b73f46d95fd470b, type: 3}
+  caveAmbientClips:
+  - {fileID: 8300000, guid: 38846ab554646614a8371b076daa16f0, type: 3}
+  - {fileID: 8300000, guid: b9e7580669a346e448e546dcfdb8e31e, type: 3}
+  - {fileID: 8300000, guid: 84895455e5efbf14e9176747b2f25a90, type: 3}
+  - {fileID: 8300000, guid: ad84d5d682c7e064da1afe94ceaef875, type: 3}
+  bgmVolume: 0.75
+  ambientVolume: 0.6
   sfxVolume: 1
-  gunshotSFX: {fileID: 0}
-  playerJumpSFX: {fileID: 0}
-  playerDashSFX: {fileID: 0}
-  playerFootstepSFX: {fileID: 0}
+  gunshotSFX: {fileID: 8300000, guid: 0bb08f4f85784414c82447727dd292d5, type: 3}
+  gunReloadSFX: {fileID: 8300000, guid: a3acdb97baa545342a67085c556c7465, type: 3}
+  gunReloadSequenceClips:
+  - {fileID: 8300000, guid: a3acdb97baa545342a67085c556c7465, type: 3}
+  - {fileID: 8300000, guid: b2fac7add96a9b64799113551edc382c, type: 3}
+  reloadSequenceDelay: 0
+  playerJumpSFX: {fileID: 8300000, guid: 9e7130c9717a29045b167b11e4dbbdee, type: 3}
+  playerDashSFX: {fileID: 8300000, guid: b17f5c7081af16f4489ca3016c658d9f, type: 3}
+  playerFootstepSFX: {fileID: 8300000, guid: 42114a4fe7a9cef4dbfe806f77739dfc, type: 3}
   playerHurtSFX: {fileID: 0}
   playerDeathSFX: {fileID: 0}
-  monsterMeleeSFX: {fileID: 0}
-  monsterRangedSFX: {fileID: 0}
-  buttonClickSFX: {fileID: 0}
+  monsterMeleeSFX: {fileID: 8300000, guid: c162ad8e5900bb343b112922448d782a, type: 3}
+  monsterRangedSFX: {fileID: 8300000, guid: bc713c7a714642a4eaf7846a2667efb2, type: 3}
+  monsterDeathSFX: {fileID: 8300000, guid: 6a70c7a4580622149b20f01ae321280b, type: 3}
+  buttonClickSFX: {fileID: 8300000, guid: 4e72cc98fa8372b4eb76f95344d3252a, type: 3}
+  gunshotSFXClips:
+  - {fileID: 8300000, guid: 0bb08f4f85784414c82447727dd292d5, type: 3}
+  - {fileID: 8300000, guid: fe57ab5d19288f6439b19657718c46f8, type: 3}
+  jumpSFXClips:
+  - {fileID: 8300000, guid: 669f51617e104fa44af5e66e245feaf7, type: 3}
+  - {fileID: 8300000, guid: 9e7130c9717a29045b167b11e4dbbdee, type: 3}
+  - {fileID: 8300000, guid: 197fa9eee6bbee04ea60fcc6cf6ab9a9, type: 3}
+  - {fileID: 8300000, guid: 2f457b290a869804a83ba7a715c528ef, type: 3}
+  dashSFXClips:
+  - {fileID: 8300000, guid: b17f5c7081af16f4489ca3016c658d9f, type: 3}
+  - {fileID: 8300000, guid: 7aa3bf4e075b95d4ca2ee05d540ab04c, type: 3}
+  footstepSFXClips:
+  - {fileID: 8300000, guid: 42114a4fe7a9cef4dbfe806f77739dfc, type: 3}
+  - {fileID: 8300000, guid: 133d3af54a6594545a1eefc7f365cc75, type: 3}
+  - {fileID: 8300000, guid: ba362ef3f1701bf4fb76ee316a13b1fd, type: 3}
+  monsterMeleeSFXClips:
+  - {fileID: 8300000, guid: c162ad8e5900bb343b112922448d782a, type: 3}
+  - {fileID: 8300000, guid: bc713c7a714642a4eaf7846a2667efb2, type: 3}
+  - {fileID: 8300000, guid: 3fbd35574df0f9544817ef8d667a240d, type: 3}
+  monsterRangedSFXClips:
+  - {fileID: 8300000, guid: bc713c7a714642a4eaf7846a2667efb2, type: 3}
+  - {fileID: 8300000, guid: 3fbd35574df0f9544817ef8d667a240d, type: 3}
+  monsterDeathSFXClips:
+  - {fileID: 8300000, guid: 6a70c7a4580622149b20f01ae321280b, type: 3}
+  - {fileID: 8300000, guid: fe3c480597f811145834b6b2b49c260e, type: 3}
+  buttonClickSFXClips:
+  - {fileID: 8300000, guid: 4e72cc98fa8372b4eb76f95344d3252a, type: 3}
+  - {fileID: 8300000, guid: 61b9b106f99db2443abc2f151b87df8d, type: 3}

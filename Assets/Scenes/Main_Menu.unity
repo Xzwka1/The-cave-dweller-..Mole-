@@ -418,6 +418,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 818930d7e437d9649b9aeb28a4c7c20e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Core.MainMenu
+  firstMapSceneName: First_MAP
 --- !u!4 &629566261
 Transform:
   m_ObjectHideFlags: 0
@@ -570,6 +571,103 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &991000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 991000002}
+  - component: {fileID: 991000003}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &991000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 991000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &991000003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 991000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f9b2d3c4e5a6f7b8c9d0e1f2a3b4c5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Core.SoundManager
+  bgmSource: {fileID: 0}
+  ambientSource: {fileID: 0}
+  sfxSource: {fileID: 0}
+  victoryMusic: {fileID: 8300000, guid: 417f8ec8b30ddc141af3bc2d3bfc49eb, type: 3}
+  mainMenuMusic: {fileID: 8300000, guid: 507372d066e67ab46913eef638cd94ed, type: 3}
+  inGameMusic: {fileID: 8300000, guid: 54416238d89880c41b73f46d95fd470b, type: 3}
+  caveAmbientClips: []
+  bgmVolume: 0.75
+  ambientVolume: 0.6
+  sfxVolume: 1
+  gunshotSFX: {fileID: 8300000, guid: 0bb08f4f85784414c82447727dd292d5, type: 3}
+  gunReloadSFX: {fileID: 0}
+  gunReloadSequenceClips:
+  - {fileID: 8300000, guid: a3acdb97baa545342a67085c556c7465, type: 3}
+  - {fileID: 8300000, guid: b2fac7add96a9b64799113551edc382c, type: 3}
+  reloadSequenceDelay: 0
+  playerJumpSFX: {fileID: 8300000, guid: 9e7130c9717a29045b167b11e4dbbdee, type: 3}
+  playerDashSFX: {fileID: 8300000, guid: b17f5c7081af16f4489ca3016c658d9f, type: 3}
+  playerFootstepSFX: {fileID: 8300000, guid: 42114a4fe7a9cef4dbfe806f77739dfc, type: 3}
+  playerHurtSFX: {fileID: 0}
+  playerDeathSFX: {fileID: 0}
+  monsterMeleeSFX: {fileID: 8300000, guid: c162ad8e5900bb343b112922448d782a, type: 3}
+  monsterRangedSFX: {fileID: 8300000, guid: bc713c7a714642a4eaf7846a2667efb2, type: 3}
+  monsterDeathSFX: {fileID: 8300000, guid: 6a70c7a4580622149b20f01ae321280b, type: 3}
+  buttonClickSFX: {fileID: 8300000, guid: 4e72cc98fa8372b4eb76f95344d3252a, type: 3}
+  gunshotSFXClips:
+  - {fileID: 8300000, guid: 0bb08f4f85784414c82447727dd292d5, type: 3}
+  - {fileID: 8300000, guid: fe57ab5d19288f6439b19657718c46f8, type: 3}
+  jumpSFXClips:
+  - {fileID: 8300000, guid: 669f51617e104fa44af5e66e245feaf7, type: 3}
+  - {fileID: 8300000, guid: 9e7130c9717a29045b167b11e4dbbdee, type: 3}
+  - {fileID: 8300000, guid: 197fa9eee6bbee04ea60fcc6cf6ab9a9, type: 3}
+  - {fileID: 8300000, guid: 2f457b290a869804a83ba7a715c528ef, type: 3}
+  dashSFXClips:
+  - {fileID: 8300000, guid: b17f5c7081af16f4489ca3016c658d9f, type: 3}
+  - {fileID: 8300000, guid: 7aa3bf4e075b95d4ca2ee05d540ab04c, type: 3}
+  footstepSFXClips:
+  - {fileID: 8300000, guid: 42114a4fe7a9cef4dbfe806f77739dfc, type: 3}
+  - {fileID: 8300000, guid: 133d3af54a6594545a1eefc7f365cc75, type: 3}
+  - {fileID: 8300000, guid: ba362ef3f1701bf4fb76ee316a13b1fd, type: 3}
+  monsterMeleeSFXClips:
+  - {fileID: 8300000, guid: c162ad8e5900bb343b112922448d782a, type: 3}
+  - {fileID: 8300000, guid: bc713c7a714642a4eaf7846a2667efb2, type: 3}
+  - {fileID: 8300000, guid: 3fbd35574df0f9544817ef8d667a240d, type: 3}
+  monsterRangedSFXClips:
+  - {fileID: 8300000, guid: bc713c7a714642a4eaf7846a2667efb2, type: 3}
+  - {fileID: 8300000, guid: 3fbd35574df0f9544817ef8d667a240d, type: 3}
+  monsterDeathSFXClips:
+  - {fileID: 8300000, guid: 6a70c7a4580622149b20f01ae321280b, type: 3}
+  - {fileID: 8300000, guid: fe3c480597f811145834b6b2b49c260e, type: 3}
+  buttonClickSFXClips:
+  - {fileID: 8300000, guid: 4e72cc98fa8372b4eb76f95344d3252a, type: 3}
+  - {fileID: 8300000, guid: 61b9b106f99db2443abc2f151b87df8d, type: 3}
 --- !u!1 &1667200526
 GameObject:
   m_ObjectHideFlags: 0
@@ -1115,66 +1213,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1972367562}
   m_CullTransparentMesh: 1
---- !u!1 &991000001
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 991000002}
-  - component: {fileID: 991000003}
-  m_Layer: 0
-  m_Name: SoundManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &991000002
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 991000001}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &991000003
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 991000001}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f9b2d3c4e5a6f7b8c9d0e1f2a3b4c5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: CaveDweller.Runtime::CaveDweller.Core.SoundManager
-  bgmSource: {fileID: 0}
-  sfxSource: {fileID: 0}
-  victoryMusic: {fileID: 8300000, guid: 417f8ec8b30ddc141af3bc2d3bfc49eb, type: 3}
-  mainMenuMusic: {fileID: 0}
-  caveAmbientMusic: {fileID: 0}
-  bgmVolume: 0.8
-  sfxVolume: 1
-  gunshotSFX: {fileID: 0}
-  playerJumpSFX: {fileID: 0}
-  playerDashSFX: {fileID: 0}
-  playerFootstepSFX: {fileID: 0}
-  playerHurtSFX: {fileID: 0}
-  playerDeathSFX: {fileID: 0}
-  monsterMeleeSFX: {fileID: 0}
-  monsterRangedSFX: {fileID: 0}
-  buttonClickSFX: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
